@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="https://github.com/Rayan-Mohammed-Rafeeq/fintrix/blob/main/frontend/public/icon.png" alt="Fintrix Logo" width="140"/>
+  <img src="frontend/public/icon.png" alt="Fintrix Logo" width="140"/>
 </p>
 
 <h1 align="center">Fintrix</h1>
@@ -9,9 +9,27 @@ Full-stack finance management platform for tracking expenses and transactions in
 
 **Backend:** Spring Boot (JWT secured REST API) · **Frontend:** React (Vite) · **DB:** PostgreSQL (Neon)
 
+**Live:** https://fintrix-web.vercel.app/ · **API:** https://fintrix-app-backend.onrender.com
+
+**Repository:** https://github.com/Rayan-Mohammed-Rafeeq/fintrix
+
 > Monorepo: see [`backend/`](./backend) and [`frontend/`](./frontend).
 
 ---
+
+## Why this project (Assessment Fit)
+
+Fintrix was built to closely match common backend assessment requirements around **API design, data modeling, validation, business logic, and access control**.
+
+How it maps to the evaluation checklist:
+
+- **User & Role Management**: users, roles (Admin/Analyst/Viewer), workspace membership
+- **Financial Records Management**: expense/transaction lifecycle, filtering and listing
+- **Dashboard Summary APIs**: server-side aggregates for totals and summaries
+- **Access Control**: JWT + RBAC + workspace-scoped authorization
+- **Validation & Error Handling**: request validation and consistent HTTP status codes
+- **Data Persistence**: PostgreSQL (local Docker + hosted Neon)
+- **Documentation**: Swagger/OpenAPI + repo README
 
 ## Project Overview
 
@@ -26,6 +44,17 @@ The system is designed around a clean separation of concerns (controller → ser
 
 ---
 
+## Quick Test (2 minutes)
+
+- Open the app: https://fintrix-web.vercel.app/
+- Explore the API contract: https://fintrix-app-backend.onrender.com/swagger-ui.html
+- Key flows to try:
+  - Auth: Register → Login (JWT)
+  - Workspaces: Create workspace → Add members → Assign roles
+  - Finance: Create expenses / borrow-lend → View dashboard summaries
+
+---
+
 ## Features
 
 - **Role-Based Access Control (RBAC)**: Admin, Analyst, Viewer
@@ -35,6 +64,16 @@ The system is designed around a clean separation of concerns (controller → ser
 - **Dashboard analytics** (totals, summaries, trends; aggregated server-side)
 - **Secure authentication** with **JWT**
 - **Forgot password / reset password** flow
+
+### Backend assessment checklist (implemented)
+
+- User and role management
+- Financial records CRUD
+- Record filtering (date/category/type)
+- Dashboard summary APIs (totals, trends)
+- Role-based access control
+- Input validation and error handling
+- Data persistence (PostgreSQL)
 
 ---
 
@@ -57,6 +96,11 @@ API documentation is available via Swagger/OpenAPI when running locally:
 
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+
+Deployed API docs (if enabled in production):
+
+- Swagger UI: `https://fintrix-app-backend.onrender.com/swagger-ui.html`
+- OpenAPI JSON: `https://fintrix-app-backend.onrender.com/v3/api-docs`
 
 ---
 
@@ -132,6 +176,18 @@ Typical package responsibilities (verify exact names in `backend/src/main/java`)
 - RBAC rules are enforced on endpoints (and/or at service level).
 - Workspace-scoped endpoints additionally verify the caller is a member of that workspace and has sufficient permissions.
 
+RBAC at a glance:
+
+| Capability | Viewer | Analyst | Admin |
+|---|:---:|:---:|:---:|
+| View dashboard summaries | ✓ | ✓ | ✓ |
+| Read records (expenses/transactions) | ✓ | ✓ | ✓ |
+| Filter/search records | ✓ | ✓ | ✓ |
+| Create/update/delete records | ✗ | ✗ / limited* | ✓ |
+| Manage members / roles | ✗ | ✗ | ✓ |
+
+\*Exact analyst permissions may vary by endpoint; see Swagger UI for the authoritative rules.
+
 ### 3) Workspace creation and membership
 
 - A user can create a **workspace**.
@@ -169,71 +225,25 @@ The API is organized under `/api/v1` and grouped by feature area:
 
 For the full, up-to-date contract, use Swagger UI locally (`/swagger-ui.html`).
 
----
-
-## Setup Instructions (Local Development)
-
-### Prerequisites
-
-- Node.js (LTS recommended)
-- pnpm
-- Java 17
-- Docker (for local Postgres)
-
-### 1) Start PostgreSQL locally (Docker)
-
-From `backend/`:
-
-```cmd
-cd E:\fintrix\backend
-docker compose up -d
-```
-
-### 2) Configure environment variables
-
-#### Backend (`backend/src/main/resources/application.properties` uses env vars)
-
-Set the following variables in your shell, IDE run configuration, or a `.env` file (if enabled in this project):
-
-- `DB_URL` (e.g. `jdbc:postgresql://localhost:5432/fintrix`)
-- `DB_USERNAME` (e.g. `postgres`)
-- `DB_PASSWORD` (e.g. `postgres`)
-- `JWT_SECRET` (a long random secret)
-- `JWT_EXPIRATION_MS` (e.g. `86400000` for 24h)
-
-Common optional variables:
-
-- `APP_CORS_ALLOWED_ORIGINS` (for local dev / deployed frontends)
-- `APP_FRONTEND_BASE_URL` (used for password reset links)
-- `JPA_DDL_AUTO` (e.g. `update`, `validate`)
-- `JPA_SHOW_SQL` (`true/false`)
-
-#### Frontend
-
-Create `frontend/.env.local`:
+### API Example (Login)
 
 ```bash
-VITE_API_BASE_URL=http://localhost:8080
+curl -X POST "https://fintrix-app-backend.onrender.com/api/v1/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"<your-email>","password":"<your-password>"}'
 ```
 
-### 3) Run the backend
+### Quick API walkthrough (happy path)
 
-```cmd
-cd E:\fintrix\backend
-mvnw.cmd spring-boot:run
-```
+1) **Register / Login** → receive JWT
 
-Backend runs on: `http://localhost:8080`
+2) **Create a workspace**
 
-### 4) Run the frontend
+3) **Add members** + assign roles (admin-only)
 
-```cmd
-cd E:\fintrix\frontend
-pnpm install
-pnpm dev
-```
+4) **Create expenses / borrow / lend** inside the workspace
 
-Frontend runs on: `http://localhost:3000`
+5) **Fetch dashboard summaries** for totals and trends
 
 ---
 
@@ -250,6 +260,11 @@ Frontend runs on: `http://localhost:3000`
 - Deploy the Vite build.
 - Set `VITE_API_BASE_URL` to the Render backend URL.
 
+Deployed URLs:
+
+- Frontend: https://fintrix-web.vercel.app/
+- Backend: https://fintrix-app-backend.onrender.com
+
 ### Database (Neon)
 
 - Create a Neon Postgres database.
@@ -257,23 +272,28 @@ Frontend runs on: `http://localhost:3000`
 
 ---
 
-## Demo Credentials
-
-> Replace these placeholders with real demo accounts (or remove before open-sourcing).
-
-- **Admin**: `admin@example.com` / `AdminPassword123!`
-- **Analyst**: `analyst@example.com` / `AnalystPassword123!`
-- **Viewer**: `viewer@example.com` / `ViewerPassword123!`
-
----
 
 ## Screenshots / Demo
 
-Add screenshots or a short demo video/GIF here:
+Dashboard and core flows (from `frontend/public/`):
 
-- Dashboard (placeholder)
-- Workspace members & roles (placeholder)
-- Expenses & transactions (placeholder)
+### Dashboard
+
+| Dark | Light |
+|---|---|
+| ![Dashboard (Dark)](./frontend/public/dashboard_dark.png) | ![Dashboard (Light)](./frontend/public/dashboard_light.png) |
+
+### Workspaces & Members
+
+| Workspaces | Members & Roles |
+|---|---|
+| ![Workspaces](./frontend/public/workspaces.png) | ![Members](./frontend/public/members.png) |
+
+### Finance
+
+| Expenses | Transactions |
+|---|---|
+| ![Expenses](./frontend/public/expenses.png) | ![Transactions](./frontend/public/transactions.png) |
 
 ---
 
@@ -293,6 +313,28 @@ Add screenshots or a short demo video/GIF here:
 - Audit logs for admin actions
 - Improved reporting exports (CSV/PDF)
 
+---
+
+## Assumptions & Design Notes
+
+- **Workspace isolation** is the primary tenant boundary: all core finance data is workspace-scoped.
+- **RBAC is enforced server-side** (not just in the UI), and workspace endpoints validate membership.
+- **Aggregations run on the backend** so the frontend can remain thin and fast.
+
+Tradeoffs kept intentionally simple for an assessment-style project:
+
+- Summary/reporting endpoints can be extended with pagination/caching for very large datasets.
+- Email delivery for password reset may require SMTP configuration in production.
+
+---
+
+## Design Highlights
+
+- **Tenant boundary:** Workspace ID is the primary isolation boundary for all finance data.
+- **Server-side authorization:** RBAC and workspace membership checks are enforced in the backend.
+- **Clean layering:** Controllers handle HTTP, services own business rules, repositories handle persistence.
+- **Reliable workflows:** Borrow/lend operations validate membership + state transitions to prevent invalid updates.
+- **Analytics strategy:** Dashboard endpoints expose aggregates (not raw dumps) to keep clients fast.
 
 
 
