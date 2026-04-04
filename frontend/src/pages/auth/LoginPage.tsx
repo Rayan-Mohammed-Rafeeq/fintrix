@@ -16,6 +16,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { FintrixSpinner } from '@/components/ui/fintrix-spinner'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLoginMutation } from '@/hooks'
 import { buildAuthRoute } from '@/lib/authRoleFlow'
@@ -80,7 +81,23 @@ export function LoginPage() {
       }
 
   return (
-    <div className="mx-auto w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="relative mx-auto w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {mutation.isPending && (
+        <div className="absolute inset-0 z-50 grid place-items-center rounded-2xl bg-black/50 p-6 backdrop-blur">
+          <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-white/5 p-6 text-center shadow-2xl">
+            <FintrixSpinner size={56} className="mx-auto" alt="Signing you in" />
+            <div className="mt-4 space-y-2">
+              <p className="text-base font-semibold text-white">Signing you in…</p>
+              <p className="text-sm leading-relaxed text-white/60">
+                If this is your first visit, it may take a few seconds. Since the backend
+                is hosted on Render (free tier), it can sometimes take up to ~3 minutes to
+                wake up after inactivity.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Header row ─────────────────────────────────────────── */}
       <div className="mb-8 flex items-center justify-between gap-4">
         {/* Role pill */}

@@ -11,6 +11,8 @@ Full-stack finance management platform for tracking expenses and transactions in
 
 **Live:** https://fintrix-web.vercel.app/ · **API:** https://fintrix-app-backend.onrender.com
 
+> Note: The backend is hosted on Render (free tier) and may take ~1–2 minutes to spin up on the first request. Once active, responses are fast.
+
 **Repository:** https://github.com/Rayan-Mohammed-Rafeeq/fintrix
 
 > Monorepo: see [`backend/`](./backend) and [`frontend/`](./frontend).

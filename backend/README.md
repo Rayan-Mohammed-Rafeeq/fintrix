@@ -2,6 +2,8 @@
 
 Secure Spring Boot backend for the Fintrix Personal Finance Manager.
 
+> Note: The backend is hosted on Render (free tier) and may take ~1–2 minutes to spin up on the first request. Once active, responses are fast.
+
 ## Stack
 - Java 17
 - Spring Boot 3

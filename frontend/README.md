@@ -2,6 +2,8 @@
 
 React + Vite + TypeScript UI integrated with the Spring Boot backend.
 
+> Note: The backend is hosted on Render (free tier) and may take ~1–2 minutes to spin up on the first request. Once active, responses are fast.
+
 ## Prerequisites
 
 - Node.js 18+
