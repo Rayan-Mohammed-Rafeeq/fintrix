@@ -12,9 +12,11 @@ import com.fintrix.backend.entity.User;
 import com.fintrix.backend.entity.Workspace;
 import com.fintrix.backend.enums.Role;
 import com.fintrix.backend.enums.UserStatus;
+import com.fintrix.backend.repository.BorrowTransactionRepository;
 import com.fintrix.backend.repository.ExpenseRepository;
 import com.fintrix.backend.repository.MembershipRepository;
 import com.fintrix.backend.repository.UserRepository;
+import com.fintrix.backend.repository.WorkspaceRepository;
 import com.fintrix.backend.security.JwtService;
 import com.fintrix.backend.service.WorkspaceService;
 import java.math.BigDecimal;
@@ -51,6 +53,12 @@ class ExpenseControllerIntegrationTest {
     private MembershipRepository membershipRepository;
 
     @Autowired
+    private BorrowTransactionRepository transactionRepository;
+
+    @Autowired
+    private WorkspaceRepository workspaceRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -58,8 +66,10 @@ class ExpenseControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        transactionRepository.deleteAll();
         expenseRepository.deleteAll();
         membershipRepository.deleteAll();
+        workspaceRepository.deleteAll();
         userRepository.deleteAll();
     }
 
