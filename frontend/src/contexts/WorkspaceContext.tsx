@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useMyWorkspacesQuery } from '@/hooks/useWorkspaces'
 import type { WorkspaceSummary } from '@/api/workspaceApi'
+import { onAuthStateChange } from '@/store/authStore'
 
 const KEY = 'fintrix_active_workspace_id'
 
@@ -25,6 +26,16 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     if (!Number.isNaN(parsed) && parsed > 0) {
       setActiveWorkspaceIdState(parsed)
     }
+  }, [])
+
+  // Prevent leaking workspace selection across users on shared devices.
+  // When auth changes (login/logout), clear the stored active workspace so the
+  // next user starts from their own workspace list.
+  useEffect(() => {
+    return onAuthStateChange(() => {
+      localStorage.removeItem(KEY)
+      setActiveWorkspaceIdState(null)
+    })
   }, [])
 
   const setActiveWorkspaceId = (id: number | null) => {

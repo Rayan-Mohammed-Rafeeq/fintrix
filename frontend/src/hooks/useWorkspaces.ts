@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { workspaceApi } from '@/api'
+import { getStoredToken, onAuthStateChange } from '@/store/authStore'
+import { useEffect, useState } from 'react'
 import type {
   CreateWorkspacePayload,
   InviteMemberPayload,
@@ -7,9 +9,19 @@ import type {
 } from '@/api/workspaceApi'
 
 export function useMyWorkspacesQuery() {
+  // React Query does not automatically refetch just because localStorage token changes.
+  // Track auth changes and make them part of the queryKey so data is fetched immediately
+  // after login and cleared after logout.
+  const [token, setToken] = useState<string | null>(() => getStoredToken())
+
+  useEffect(() => {
+    return onAuthStateChange(() => setToken(getStoredToken()))
+  }, [])
+
   return useQuery({
-    queryKey: ['workspaces', 'mine'],
+    queryKey: ['workspaces', 'mine', token],
     queryFn: workspaceApi.getMyWorkspaces,
+    enabled: !!token,
   })
 }
 
