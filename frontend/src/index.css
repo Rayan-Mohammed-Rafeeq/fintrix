@@ -41,6 +41,10 @@
   --success-foreground: oklch(0.98 0.005 90);
   --warning: oklch(0.75 0.15 85);
   --warning-foreground: oklch(0.25 0.01 260);
+
+  /* Chart tokens (used by Recharts overrides) */
+  --chart-axis: #6B7280; /* slate-500 */
+  --chart-grid: rgba(0, 0, 0, 0.06);
 }
 
 .dark {
@@ -80,6 +84,10 @@
   --success-foreground: oklch(0.12 0.02 260);
   --warning: oklch(0.8 0.15 85);
   --warning-foreground: oklch(0.15 0.01 260);
+
+  /* Chart tokens (used by Recharts overrides) */
+  --chart-axis: #9CA3AF; /* slate-400 */
+  --chart-grid: rgba(255, 255, 255, 0.10);
 }
 
 @theme inline {
@@ -159,6 +167,13 @@
   }
 
   /*
+    Recharts renders SVG elements. If any global CSS sets `svg { color: ... }`
+    or `svg * { fill: currentColor; stroke: currentColor; }` it can force
+    series/axes/grid/legend to render black.
+    We scope overrides to Recharts so icons and other SVGs are unaffected.
+  */
+
+  /*
     Some CSS setups apply global SVG rules (e.g., `svg * { fill: currentColor; }`).
     Recharts sets fills/strokes on each SVG element, so we explicitly keep them.
     These rules are scoped to Recharts only to avoid affecting icons.
@@ -168,16 +183,43 @@
     color: initial;
   }
 
-  /* Ensure global `svg * { fill/stroke: currentColor }` rules can't override chart series */
-  .recharts-wrapper .recharts-sector,
-  .recharts-wrapper .recharts-pie-sector,
-  .recharts-wrapper .recharts-bar-rectangle,
-  .recharts-wrapper .recharts-area-area,
-  .recharts-wrapper .recharts-area-curve,
-  .recharts-wrapper .recharts-dot {
-    fill: unset !important;
-    stroke: unset !important;
+  /* Ensure SVG text defaults to visible theme color (especially in dark mode). */
+  .recharts-wrapper svg {
+    color: hsl(var(--foreground));
   }
+
+  /* Default axis/legend text colors (avoid fully-black). */
+  .recharts-wrapper .recharts-text,
+  .recharts-wrapper .recharts-legend-item-text,
+  .recharts-wrapper .recharts-cartesian-axis-tick-value {
+    fill: var(--chart-axis) !important;
+  }
+
+  /* Default grid styling (light-gray, not black). */
+  .recharts-wrapper .recharts-cartesian-grid line,
+  .recharts-wrapper .recharts-cartesian-grid-horizontal line,
+  .recharts-wrapper .recharts-cartesian-grid-vertical line {
+    stroke: var(--chart-grid) !important;
+  }
+
+  /* If any global css forces currentColor, make sure chart primitives still use explicit attrs. */
+  .recharts-wrapper .recharts-layer,
+  .recharts-wrapper .recharts-surface {
+    color: inherit;
+  }
+
+  /*
+    Do NOT reset fill/stroke on chart primitives.
+    Recharts relies on SVG presentation attributes (fill/stroke) for series colors.
+    Resetting them (especially with !important) can cause slices/lines to render black.
+  */
+
+  /*
+    IMPORTANT:
+    Do NOT set `fill: inherit !important` / `stroke: inherit !important` for pie sectors.
+    Recharts uses SVG presentation attributes (fill/stroke) per slice; inheriting can
+    force everything to render black.
+  */
 
   /* Hover/active highlight */
   .recharts-pie-sector:hover {
@@ -202,33 +244,15 @@
       0 0 90px rgba(34, 197, 94, 0.14);
   }
 
-  /* Floating icon bob */
-  .auth-float {
-    animation: auth-float 8s ease-in-out infinite;
-    will-change: transform;
+  /* --- Guaranteed Pie fix: isolate from global SVG fill overrides -------- */
+  .recharts-fix svg path {
+    fill: unset !important;
   }
 
-  /* Orb drift animations (AuthBackdrop) */
-  .auth-orb-1 { animation: orb-drift-1 18s ease-in-out infinite; will-change: transform; }
-  .auth-orb-2 { animation: orb-drift-2 22s ease-in-out infinite; will-change: transform; }
-  .auth-orb-3 { animation: orb-drift-3 26s ease-in-out infinite; will-change: transform; }
-  .auth-orb-4 { animation: orb-drift-4 20s ease-in-out infinite; will-change: transform; }
-
-  /* Entrance animation helpers (for animate-in) */
-  .animate-in {
-    animation-duration: 0.5s;
-    animation-fill-mode: both;
+  .recharts-fix .recharts-sector {
+    fill: unset !important;
   }
-  .fade-in          { animation-name: fade-in; }
-  .slide-in-from-bottom-4 { animation-name: slide-in-from-bottom; }
 
-  @media (prefers-reduced-motion: reduce) {
-    .auth-float,
-    .auth-orb-1, .auth-orb-2, .auth-orb-3, .auth-orb-4,
-    .animate-in {
-      animation: none !important;
-    }
-  }
 }
 
 /* ── Keyframes ──────────────────────────────────────────────────────── */

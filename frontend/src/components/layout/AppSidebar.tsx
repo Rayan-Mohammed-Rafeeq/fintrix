@@ -90,13 +90,16 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
                       to={item.href}
                       onClick={handleNavClick}
                       className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                        'group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ease-[cubic-bezier(.2,.8,.2,1)]',
                         isActive
-                          ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                          : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground',
+                          ? 'border border-[rgba(16,185,129,0.35)] bg-[rgba(16,185,129,0.12)] text-white shadow-[0_0_18px_rgba(16,185,129,0.45)]'
+                          : 'border border-transparent text-sidebar-foreground/70 hover:scale-[1.02] hover:border-[rgba(16,185,129,0.25)] hover:bg-[linear-gradient(90deg,rgba(16,185,129,0.12),rgba(16,185,129,0.06))] hover:text-white hover:shadow-[0_0_14px_rgba(16,185,129,0.40)]',
                       )}
                     >
-                      <item.icon className="h-5 w-5" />
+                      <item.icon className={cn(
+                        'h-5 w-5 transition-colors duration-200',
+                        isActive ? 'text-[#10B981]' : 'text-sidebar-foreground/70 group-hover:text-[#10B981]',
+                      )} />
                       {item.title}
                     </Link>
                   )
@@ -120,13 +123,16 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
                       to={item.href}
                       onClick={handleNavClick}
                       className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                        'group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ease-[cubic-bezier(.2,.8,.2,1)]',
                         isActive
-                          ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                          : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground',
+                          ? 'border border-[rgba(16,185,129,0.35)] bg-[rgba(16,185,129,0.12)] text-white shadow-[0_0_18px_rgba(16,185,129,0.45)]'
+                          : 'border border-transparent text-sidebar-foreground/70 hover:scale-[1.02] hover:border-[rgba(16,185,129,0.25)] hover:bg-[linear-gradient(90deg,rgba(16,185,129,0.12),rgba(16,185,129,0.06))] hover:text-white hover:shadow-[0_0_14px_rgba(16,185,129,0.40)]',
                       )}
                     >
-                      <item.icon className="h-5 w-5" />
+                      <item.icon className={cn(
+                        'h-5 w-5 transition-colors duration-200',
+                        isActive ? 'text-[#10B981]' : 'text-sidebar-foreground/70 group-hover:text-[#10B981]',
+                      )} />
                       {item.title}
                     </Link>
                   )

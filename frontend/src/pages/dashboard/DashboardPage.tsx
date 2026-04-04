@@ -20,7 +20,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -39,19 +38,28 @@ import { formatCurrency } from '@/lib/utils'
 import { useAuth } from '@/contexts/AuthContext'
 import { useExpensesQuery, useTransactionsQuery } from '@/hooks'
 import type { Expense, Transaction } from '@/types'
+import {
+  CATEGORICAL_COLORS,
+  AXIS_STYLE,
+  GRID_STYLE,
+  LINE_CHART_STYLES,
+  CHART_PALETTE,
+} from '@/lib/chart-theme'
 
-// Fintech palette (no black/white; distinct but not overly saturated)
-const CHART_COLORS = [
-  '#10B981', // emerald
-  '#06B6D4', // teal/cyan
-  '#3B82F6', // blue
-  '#8B5CF6', // soft purple
-  '#F59E0B', // warm amber (accent)
-]
+const CATEGORY_COLORS: Record<string, string> = {
+  Food: '#F59E0B',
+  Transportation: '#3B82F6',
+  Entertainment: '#10B981',
+  Shopping: '#8B5CF6',
+  Bills: '#EF4444',
+  Healthcare: '#06B6D4',
+  Education: '#6366F1',
+  Travel: '#EC4899',
+  Other: '#6B7280',
+}
 
-const legendFormatter = (value: string) => (
-  <span className="text-foreground">{value}</span>
-)
+const FALLBACK_SLICE_COLOR = '#6B7280'
+
 
 function ChartTooltip({ active, payload, label, formatter }: any) {
   if (!active || !payload?.length) return null
@@ -61,7 +69,7 @@ function ChartTooltip({ active, payload, label, formatter }: any) {
       {label ? <div className="mb-1 text-xs text-muted-foreground">{label}</div> : null}
       <div className="space-y-1">
         {payload.map((p: any, i: number) => {
-          const color = p.color || p.fill || p.stroke || CHART_COLORS[i % CHART_COLORS.length]
+          const color = p.color || p.fill || p.stroke || CATEGORICAL_COLORS[i % CATEGORICAL_COLORS.length]
           const name = p.name ?? p.dataKey
           const value = formatter ? formatter(p.value, name, p, i) : p.value
           return (
@@ -84,7 +92,7 @@ function ChartTooltip({ active, payload, label, formatter }: any) {
 
 function GradientBar(props: any) {
   const { x, y, width, height, index } = props
-  const fill = CHART_COLORS[index % CHART_COLORS.length]
+  const fill = CATEGORICAL_COLORS[index % CATEGORICAL_COLORS.length]
   const id = `barGradient-${index}`
 
   return (
@@ -105,9 +113,9 @@ function ChartDefs() {
     <defs>
       {/* Emerald neon line/area gradient */}
       <linearGradient id="areaEmerald" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stopColor={CHART_COLORS[0]} stopOpacity={0.40} />
-        <stop offset="75%" stopColor={CHART_COLORS[0]} stopOpacity={0.14} />
-        <stop offset="100%" stopColor={CHART_COLORS[0]} stopOpacity={0.04} />
+        <stop offset="0%" stopColor={CHART_PALETTE.emerald} stopOpacity={0.4} />
+        <stop offset="75%" stopColor={CHART_PALETTE.emerald} stopOpacity={0.14} />
+        <stop offset="100%" stopColor={CHART_PALETTE.emerald} stopOpacity={0.04} />
       </linearGradient>
 
       {/* Subtle glow for the line stroke */}
@@ -151,6 +159,31 @@ export function DashboardPage() {
     })
     return Object.entries(categoryMap).map(([name, value]) => ({ name, value }))
   }, [expenses])
+
+  const pieData = useMemo(
+    () =>
+      expensesByCategory.map((d) => ({
+        ...d,
+        fill: CATEGORY_COLORS[d.name] || FALLBACK_SLICE_COLOR,
+      })),
+    [expensesByCategory],
+  )
+
+  // Stable chart data: filter out 0 values and keep a consistent reference
+  // so the donut doesn't render partial segments while data is still settling.
+  const stablePieData = useMemo(
+    () => pieData.filter((d) => Number(d.value) > 0),
+    [pieData],
+  )
+
+  // Debug: confirm per-slice colors are present (prevents Recharts defaulting to black)
+  if (import.meta.env.DEV) {
+    // eslint-disable-next-line no-console
+    console.log(
+      '[DashboardPage] expensesByCategory slice colors:',
+      expensesByCategory.map((d, i) => ({ name: d.name, value: d.value, fill: CATEGORICAL_COLORS[i % CATEGORICAL_COLORS.length] })),
+    )
+  }
 
   const expenseTrend = useMemo(() => {
     const monthlyData: Record<string, number> = {}
@@ -253,33 +286,45 @@ export function DashboardPage() {
           <CardContent>
             {isLoading ? (
               <Skeleton className="h-[200px] w-full" />
-            ) : expensesByCategory.length > 0 ? (
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <ChartDefs />
-                  <Pie
-                    data={expensesByCategory}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={80}
-                    paddingAngle={2}
-                    dataKey="value"
-                    stroke="transparent"
-                  >
-                    {expensesByCategory.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={CHART_COLORS[index % CHART_COLORS.length]}
-                        stroke="transparent"
-                        style={{ cursor: 'pointer' }}
+            ) : stablePieData.length > 0 ? (
+              <div className="chart-isolated">
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={stablePieData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={90}
+                      isAnimationActive={false}
+                      stroke="transparent"
+                    >
+                      {stablePieData.map((entry) => (
+                        <Cell
+                          key={`cell-${entry.name}`}
+                          style={{ fill: CATEGORY_COLORS[entry.name] || FALLBACK_SLICE_COLOR }}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+
+                {/* Custom legend (single source of truth: stablePieData + CATEGORY_COLORS) */}
+                <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
+                  {stablePieData.map((item) => (
+                    <div key={item.name} className="flex items-center gap-2">
+                      <div
+                        className="h-3 w-3 rounded-sm"
+                        style={{ backgroundColor: CATEGORY_COLORS[item.name] || FALLBACK_SLICE_COLOR }}
                       />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<ChartTooltip formatter={(v: number) => formatCurrency(v)} />} />
-                  <Legend formatter={legendFormatter} iconType="circle" />
-                </PieChart>
-              </ResponsiveContainer>
+                      <span className="text-xs text-muted-foreground">{item.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             ) : (
               <div className="flex h-[200px] items-center justify-center text-muted-foreground">
                 No expense data yet
@@ -301,24 +346,15 @@ export function DashboardPage() {
               <ResponsiveContainer width="100%" height={200}>
                 <AreaChart data={expenseTrend}>
                   <ChartDefs />
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="month" className="text-xs" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis
-                    className="text-xs"
-                    stroke="hsl(var(--muted-foreground))"
-                    tickFormatter={(v) => formatCurrency(Number(v))}
-                  />
+                  <CartesianGrid {...GRID_STYLE} />
+                  <XAxis dataKey="month" {...AXIS_STYLE} />
+                  <YAxis {...AXIS_STYLE} tickFormatter={(v) => formatCurrency(Number(v))} />
                   <Tooltip content={<ChartTooltip formatter={(v: number) => formatCurrency(v)} />} />
                   <Area
                     type="monotone"
                     dataKey="amount"
-                    stroke={CHART_COLORS[0]}
                     fill="url(#areaEmerald)"
-                    fillOpacity={1}
-                    strokeWidth={2}
-                    style={{ filter: 'url(#lineGlow)' }}
-                    dot={{ r: 3, stroke: CHART_COLORS[0], fill: CHART_COLORS[0] }}
-                    activeDot={{ r: 5, stroke: CHART_COLORS[0], fill: CHART_COLORS[0] }}
+                    {...LINE_CHART_STYLES}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -343,21 +379,17 @@ export function DashboardPage() {
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={borrowVsLend}>
                   <ChartDefs />
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="name" className="text-xs" stroke="hsl(var(--muted-foreground))" />
-                  <YAxis
-                    className="text-xs"
-                    stroke="hsl(var(--muted-foreground))"
-                    tickFormatter={(v) => formatCurrency(Number(v))}
-                  />
+                  <CartesianGrid {...GRID_STYLE} />
+                  <XAxis dataKey="name" {...AXIS_STYLE} />
+                  <YAxis {...AXIS_STYLE} tickFormatter={(v) => formatCurrency(Number(v))} />
                   <Tooltip content={<ChartTooltip formatter={(v: number) => formatCurrency(v)} />} />
-                  <Bar
-                    dataKey="amount"
-                    shape={<GradientBar />}
-                    isAnimationActive={false}
-                  >
-                    <Cell fill={CHART_COLORS[2]} />
-                    <Cell fill={CHART_COLORS[0]} />
+                  <Bar dataKey="amount" shape={<GradientBar />} isAnimationActive={false}>
+                    {borrowVsLend.map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={CATEGORICAL_COLORS[index % CATEGORICAL_COLORS.length]}
+                      />
+                    ))}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>

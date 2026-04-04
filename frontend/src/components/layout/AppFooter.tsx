@@ -16,13 +16,13 @@ type AppFooterProps = {
 }
 
 const linkClassName =
-  'text-sm text-white/50 hover:text-white underline-offset-4 hover:underline transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f1c] rounded-sm'
+  'inline-flex items-center rounded-lg px-2 py-1 text-sm text-white/50 transition-all duration-[250ms] ease-in-out hover:scale-[1.02] hover:bg-[rgba(16,185,129,0.08)] hover:text-white hover:shadow-[0_0_10px_rgba(16,185,129,0.4)] hover:ring-1 hover:ring-[rgba(16,185,129,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f1c]'
 
 const iconLinkClassName =
-  'group inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-white/60 hover:text-white bg-white/0 hover:bg-white/5 transition-all duration-200 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f1c]'
+  'group inline-flex items-center gap-2 rounded-xl border border-transparent px-3 py-2 text-sm text-white/60 transition-all duration-[250ms] ease-in-out hover:scale-[1.02] hover:border-[rgba(16,185,129,0.25)] hover:bg-[linear-gradient(90deg,rgba(16,185,129,0.12),rgba(16,185,129,0.06))] hover:text-white hover:shadow-[0_0_14px_rgba(16,185,129,0.40)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f1c]'
 
 const iconWrapClassName =
-  'grid place-items-center h-9 w-9 rounded-lg border border-white/10 bg-white/5 text-white/60 group-hover:text-white group-hover:border-white/20 transition-colors'
+  'grid place-items-center h-9 w-9 rounded-lg border border-white/10 bg-white/5 text-white/60 transition-colors group-hover:text-[#10B981] group-hover:border-[rgba(16,185,129,0.35)]'
 
 const GitHubMark = () => (
   <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4" fill="currentColor">

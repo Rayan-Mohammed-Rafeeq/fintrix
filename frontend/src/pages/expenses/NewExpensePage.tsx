@@ -5,19 +5,26 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { ExpenseForm, type ExpenseFormData } from '@/components/expenses/ExpenseForm'
 import { useCreateExpenseMutation } from '@/hooks'
+import { useAuth } from '@/contexts/AuthContext'
 
 export function NewExpensePage() {
   const navigate = useNavigate()
   const mutation = useCreateExpenseMutation()
+  const { user } = useAuth()
 
   const handleSubmit = (data: ExpenseFormData) => {
+    if (user?.role === 'VIEWER' || user?.role === 'ANALYST') {
+      toast.error('You don\'t have permission to create expenses. Please contact an Admin.')
+      return
+    }
+
     mutation.mutate(data, {
       onSuccess: () => {
         toast.success('Expense created successfully')
         navigate('/expenses')
       },
       onError: () => {
-        toast.error('Failed to create expense')
+        toast.error('Failed to create expense. You may not have permission.')
       },
     })
   }

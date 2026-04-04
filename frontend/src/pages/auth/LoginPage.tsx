@@ -208,14 +208,14 @@ export function LoginPage() {
           Don&apos;t have an account?{' '}
           <Link
             to={buildAuthRoute('/register', 'VIEWER')}
-            className="font-medium text-emerald-400 transition-colors hover:text-emerald-300 hover:underline"
+            className="inline-flex items-center gap-2 rounded-lg px-2 py-1 font-medium text-emerald-400 transition-all duration-[250ms] ease-in-out hover:scale-[1.02] hover:bg-[rgba(16,185,129,0.08)] hover:text-white hover:shadow-[0_0_10px_rgba(16,185,129,0.4)] hover:ring-1 hover:ring-[rgba(16,185,129,0.25)]"
           >
             Create account
           </Link>
         </p>
 
         {/* Trust line */}
-        <p className="text-center text-xs text-white/20">
+        <p className="text-center text-xs text-white/20 transition-all duration-[250ms] ease-in-out hover:text-white/60">
           Protected by 256-bit encryption · Your data is private
         </p>
       </div>
