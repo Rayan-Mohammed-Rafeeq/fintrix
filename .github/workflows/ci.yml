@@ -13,12 +13,18 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
           cache: maven
+
+
+      - name: Give execute permission
+        run: chmod +x mvnw
+
       - name: Test
         run: ./mvnw -q test
 
@@ -29,20 +35,31 @@ jobs:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+
+      - name: Enable pnpm cache
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
           cache-dependency-path: frontend/pnpm-lock.yaml
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+
       - name: Install
         run: pnpm install --frozen-lockfile
+
       - name: Typecheck
         run: pnpm lint
+
       - name: Build
         run: pnpm build
-
