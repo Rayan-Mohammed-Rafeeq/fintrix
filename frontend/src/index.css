@@ -143,6 +143,58 @@
     @apply border border-white/10 bg-white/5 backdrop-blur-xl;
   }
 
+  /* Hide scrollbar but keep scrolling (Chrome/Edge/Firefox) */
+  .scrollbar-none {
+    -ms-overflow-style: none; /* IE/old Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none; /* Chrome/Safari/Edge */
+  }
+
+  /* --- Charts (Recharts) ------------------------------------------------ */
+  .chart-tooltip {
+    @apply rounded-lg border bg-background/95 px-3 py-2 text-sm shadow-lg backdrop-blur;
+  }
+
+  /*
+    Some CSS setups apply global SVG rules (e.g., `svg * { fill: currentColor; }`).
+    Recharts sets fills/strokes on each SVG element, so we explicitly keep them.
+    These rules are scoped to Recharts only to avoid affecting icons.
+  */
+  .recharts-wrapper {
+    /* prevent accidental `currentColor` inheritance from forcing chart primitives to black */
+    color: initial;
+  }
+
+  /* Ensure global `svg * { fill/stroke: currentColor }` rules can't override chart series */
+  .recharts-wrapper .recharts-sector,
+  .recharts-wrapper .recharts-pie-sector,
+  .recharts-wrapper .recharts-bar-rectangle,
+  .recharts-wrapper .recharts-area-area,
+  .recharts-wrapper .recharts-area-curve,
+  .recharts-wrapper .recharts-dot {
+    fill: unset !important;
+    stroke: unset !important;
+  }
+
+  /* Hover/active highlight */
+  .recharts-pie-sector:hover {
+    filter: drop-shadow(0 6px 18px color-mix(in oklab, var(--primary) 30%, transparent));
+  }
+
+  /* Slight brighten on hover for chart primitives */
+  .recharts-wrapper .recharts-pie-sector:hover,
+  .recharts-wrapper .recharts-bar-rectangle:hover,
+  .recharts-wrapper .recharts-area-area:hover {
+    filter: brightness(1.06) saturate(1.08);
+  }
+
+  .recharts-bar-rectangle:hover {
+    filter: drop-shadow(0 10px 20px color-mix(in oklab, var(--primary) 22%, transparent));
+  }
+
   .auth-neon-ring {
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.10),

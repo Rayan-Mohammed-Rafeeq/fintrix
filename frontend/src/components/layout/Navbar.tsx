@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Menu, Bell, Search, ShieldCheck, Wallet } from 'lucide-react'
+import { Menu, Bell, Search, Moon, Sun } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,8 +13,10 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { useAuth } from '@/contexts/AuthContext'
+import { useTheme } from '@/contexts/ThemeContext'
 import { getInitials } from '@/lib/utils'
 import { getRoleLabel } from '@/lib/roleUtils'
+import { cn } from '@/lib/utils'
 
 interface NavbarProps {
   onMenuClick: () => void
@@ -22,10 +24,11 @@ interface NavbarProps {
 
 export function Navbar({ onMenuClick }: NavbarProps) {
   const { user, logout } = useAuth()
+  const { toggleTheme, isDark } = useTheme()
   const isAdmin = user?.role === 'ADMIN'
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-border bg-card px-4 md:px-6">
+    <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-border/60 bg-card/80 px-4 backdrop-blur-md md:px-6">
       {/* Mobile Menu Button */}
       <Button
         variant="ghost"
@@ -36,8 +39,6 @@ export function Navbar({ onMenuClick }: NavbarProps) {
         <Menu className="h-5 w-5" />
         <span className="sr-only">Toggle menu</span>
       </Button>
-
-
 
       {/* Search */}
       <div className="hidden flex-1 md:flex">
@@ -50,17 +51,17 @@ export function Navbar({ onMenuClick }: NavbarProps) {
                 ? 'Search users, expenses, transactions...'
                 : 'Search expenses, transactions...'
             }
-            className="w-full bg-secondary pl-10"
+            className="w-full bg-secondary/60 pl-10 focus-visible:ring-primary/50"
           />
         </div>
       </div>
 
-      {/* Mobile Search */}
+      {/* Mobile spacer */}
       <div className="flex-1 md:hidden" />
 
       {/* Right Side */}
-      <div className="flex items-center gap-2">
-        {/* Search Button (Mobile) */}
+      <div className="flex items-center gap-1.5">
+        {/* Mobile Search */}
         <Button variant="ghost" size="icon" className="md:hidden">
           <Search className="h-5 w-5" />
           <span className="sr-only">Search</span>
@@ -73,29 +74,64 @@ export function Navbar({ onMenuClick }: NavbarProps) {
           <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary" />
         </Button>
 
+        {/* ── Theme Toggle ─────────────────────────────────────── */}
+        <Button
+          id="theme-toggle"
+          variant="ghost"
+          size="icon"
+          onClick={toggleTheme}
+          aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          className={cn(
+            'relative overflow-hidden transition-all duration-200',
+            'hover:bg-primary/10 hover:text-primary',
+          )}
+        >
+          {/* Sun icon — visible in dark mode */}
+          <Sun
+            className={cn(
+              'absolute h-5 w-5 transition-all duration-300',
+              isDark
+                ? 'rotate-0 scale-100 opacity-100'
+                : 'rotate-90 scale-0 opacity-0',
+            )}
+          />
+          {/* Moon icon — visible in light mode */}
+          <Moon
+            className={cn(
+              'absolute h-5 w-5 transition-all duration-300',
+              isDark
+                ? '-rotate-90 scale-0 opacity-0'
+                : 'rotate-0 scale-100 opacity-100',
+            )}
+          />
+        </Button>
+
         {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+            <Button variant="ghost" className="relative h-9 w-9 rounded-full ring-2 ring-primary/0 transition-all hover:ring-primary/40">
               <Avatar className="h-9 w-9">
-                <AvatarFallback className="bg-primary text-primary-foreground">
+                <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
                   {user?.name ? getInitials(user.name) : 'U'}
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuContent align="end" className="w-60">
             <DropdownMenuLabel>
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium">{user?.name}</p>
+              <div className="flex flex-col space-y-1 py-1">
+                <p className="text-sm font-semibold">{user?.name}</p>
                 <p className="text-xs text-muted-foreground">{user?.email}</p>
+                <Badge variant="outline" className="mt-1 w-fit text-[10px] font-medium uppercase tracking-wider text-primary border-primary/30">
+                  {getRoleLabel(user?.role)}
+                </Badge>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Profile</DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout} className="text-destructive">
+            <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive">
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

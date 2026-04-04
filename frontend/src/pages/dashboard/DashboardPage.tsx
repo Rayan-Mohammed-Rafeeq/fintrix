@@ -40,13 +40,87 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useExpensesQuery, useTransactionsQuery } from '@/hooks'
 import type { Expense, Transaction } from '@/types'
 
+// Fintech palette (no black/white; distinct but not overly saturated)
 const CHART_COLORS = [
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
-  'hsl(var(--chart-5))',
+  '#10B981', // emerald
+  '#06B6D4', // teal/cyan
+  '#3B82F6', // blue
+  '#8B5CF6', // soft purple
+  '#F59E0B', // warm amber (accent)
 ]
+
+const legendFormatter = (value: string) => (
+  <span className="text-foreground">{value}</span>
+)
+
+function ChartTooltip({ active, payload, label, formatter }: any) {
+  if (!active || !payload?.length) return null
+
+  return (
+    <div className="chart-tooltip">
+      {label ? <div className="mb-1 text-xs text-muted-foreground">{label}</div> : null}
+      <div className="space-y-1">
+        {payload.map((p: any, i: number) => {
+          const color = p.color || p.fill || p.stroke || CHART_COLORS[i % CHART_COLORS.length]
+          const name = p.name ?? p.dataKey
+          const value = formatter ? formatter(p.value, name, p, i) : p.value
+          return (
+            <div key={`${name}-${i}`} className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ background: color }}
+                />
+                <span className="text-xs text-foreground/80">{name}</span>
+              </div>
+              <span className="text-xs font-medium text-foreground">{value}</span>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function GradientBar(props: any) {
+  const { x, y, width, height, index } = props
+  const fill = CHART_COLORS[index % CHART_COLORS.length]
+  const id = `barGradient-${index}`
+
+  return (
+    <g>
+      <defs>
+        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={fill} stopOpacity={1} />
+          <stop offset="100%" stopColor={fill} stopOpacity={0.75} />
+        </linearGradient>
+      </defs>
+      <rect x={x} y={y} width={width} height={height} rx={4} ry={4} fill={`url(#${id})`} />
+    </g>
+  )
+}
+
+function ChartDefs() {
+  return (
+    <defs>
+      {/* Emerald neon line/area gradient */}
+      <linearGradient id="areaEmerald" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor={CHART_COLORS[0]} stopOpacity={0.40} />
+        <stop offset="75%" stopColor={CHART_COLORS[0]} stopOpacity={0.14} />
+        <stop offset="100%" stopColor={CHART_COLORS[0]} stopOpacity={0.04} />
+      </linearGradient>
+
+      {/* Subtle glow for the line stroke */}
+      <filter id="lineGlow" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="2.5" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+  )
+}
 
 export function DashboardPage() {
   const { user } = useAuth()
@@ -182,6 +256,7 @@ export function DashboardPage() {
             ) : expensesByCategory.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
                 <PieChart>
+                  <ChartDefs />
                   <Pie
                     data={expensesByCategory}
                     cx="50%"
@@ -190,13 +265,19 @@ export function DashboardPage() {
                     outerRadius={80}
                     paddingAngle={2}
                     dataKey="value"
+                    stroke="transparent"
                   >
                     {expensesByCategory.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={CHART_COLORS[index % CHART_COLORS.length]}
+                        stroke="transparent"
+                        style={{ cursor: 'pointer' }}
+                      />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value: number) => formatCurrency(value)} />
-                  <Legend />
+                  <Tooltip content={<ChartTooltip formatter={(v: number) => formatCurrency(v)} />} />
+                  <Legend formatter={legendFormatter} iconType="circle" />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -219,16 +300,25 @@ export function DashboardPage() {
             ) : expenseTrend.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
                 <AreaChart data={expenseTrend}>
+                  <ChartDefs />
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="month" className="text-xs" />
-                  <YAxis className="text-xs" tickFormatter={(v) => formatCurrency(Number(v))} />
-                  <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                  <XAxis dataKey="month" className="text-xs" stroke="hsl(var(--muted-foreground))" />
+                  <YAxis
+                    className="text-xs"
+                    stroke="hsl(var(--muted-foreground))"
+                    tickFormatter={(v) => formatCurrency(Number(v))}
+                  />
+                  <Tooltip content={<ChartTooltip formatter={(v: number) => formatCurrency(v)} />} />
                   <Area
                     type="monotone"
                     dataKey="amount"
-                    stroke="hsl(var(--chart-1))"
-                    fill="hsl(var(--chart-1))"
-                    fillOpacity={0.3}
+                    stroke={CHART_COLORS[0]}
+                    fill="url(#areaEmerald)"
+                    fillOpacity={1}
+                    strokeWidth={2}
+                    style={{ filter: 'url(#lineGlow)' }}
+                    dot={{ r: 3, stroke: CHART_COLORS[0], fill: CHART_COLORS[0] }}
+                    activeDot={{ r: 5, stroke: CHART_COLORS[0], fill: CHART_COLORS[0] }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -252,13 +342,22 @@ export function DashboardPage() {
             ) : borrowVsLend.some((d) => d.amount > 0) ? (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={borrowVsLend}>
+                  <ChartDefs />
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="name" className="text-xs" />
-                  <YAxis className="text-xs" tickFormatter={(v) => formatCurrency(Number(v))} />
-                  <Tooltip formatter={(value: number) => formatCurrency(value)} />
-                  <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
-                    <Cell fill="hsl(var(--chart-3))" />
-                    <Cell fill="hsl(var(--chart-1))" />
+                  <XAxis dataKey="name" className="text-xs" stroke="hsl(var(--muted-foreground))" />
+                  <YAxis
+                    className="text-xs"
+                    stroke="hsl(var(--muted-foreground))"
+                    tickFormatter={(v) => formatCurrency(Number(v))}
+                  />
+                  <Tooltip content={<ChartTooltip formatter={(v: number) => formatCurrency(v)} />} />
+                  <Bar
+                    dataKey="amount"
+                    shape={<GradientBar />}
+                    isAnimationActive={false}
+                  >
+                    <Cell fill={CHART_COLORS[2]} />
+                    <Cell fill={CHART_COLORS[0]} />
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>

@@ -73,7 +73,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
       <Separator className="bg-sidebar-border" />
 
       {/* Navigation */}
-      <ScrollArea className="flex-1 px-3 py-4">
+      <ScrollArea className="flex-1 px-3 py-4" viewportClassName="scrollbar-none">
         <div className="space-y-6">
           {(isUser || isAdmin) && (
             <div className="space-y-1">
