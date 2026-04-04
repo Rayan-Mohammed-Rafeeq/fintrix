@@ -1,4 +1,8 @@
+# Backend cold start (Render free tier)
 
+**Note:** The backend is hosted on Render (free tier) and may take **~1–2 minutes** (sometimes up to **~3 minutes**) to spin up on the first request after inactivity. Once active, responses are fast.
+
+---
 <p align="center">
   <img src="frontend/public/icon.png" alt="Fintrix Logo" width="140"/>
 </p>
