@@ -46,14 +46,34 @@ The system is designed around a clean separation of concerns (controller → ser
 
 ## Quick Test (2 minutes)
 
-- Open the app: https://fintrix-web.vercel.app/
-- Explore the API contract: https://fintrix-app-backend.onrender.com/swagger-ui.html
-- Key flows to try:
-  - Auth: Register → Login (JWT)
-  - Workspaces: Create workspace → Add members → Assign roles
-  - Finance: Create expenses / borrow-lend → View dashboard summaries
+1. Open: https://fintrix-web.vercel.app/
+2. Login using demo credentials below
+3. Create or explore a workspace
+4. Add expenses / view dashboard trends
 
 ---
+## Demo Credentials
+
+Use the following accounts to explore the application with different roles:
+
+- **Admin**  
+  Email: admin@fintrix.com  
+  Password: Admin123  
+  *(Rayan Mohammed Rafeeq – full access)*
+
+- **Analyst**  
+  Email: analyst@fintrix.com  
+  Password: Analyst123  
+  *(Neha Sharma – can create and analyze data)*
+
+- **Viewer**  
+  Email: viewer@fintrix.com  
+  Password: Viewer123  
+  *(Rahul Verma – read-only access)*
+
+---
+
+> A demo workspace with pre-populated financial data (expenses, transactions, and trends) is available for quick evaluation.
 
 ## Features
 
@@ -65,16 +85,6 @@ The system is designed around a clean separation of concerns (controller → ser
 - **Secure authentication** with **JWT**
 - **Forgot password / reset password** flow
 
-### Backend assessment checklist (implemented)
-
-- User and role management
-- Financial records CRUD
-- Record filtering (date/category/type)
-- Dashboard summary APIs (totals, trends)
-- Role-based access control
-- Input validation and error handling
-- Data persistence (PostgreSQL)
-
 ---
 
 ## System Architecture
@@ -85,23 +95,14 @@ Deployment flow:
 React (Vercel)  -->  Spring Boot API (Render)  -->  PostgreSQL (Neon)
 ```
 
-Logical layering (backend):
 
-- **Controller layer**: REST endpoints, request validation, response shaping
-- **Service layer**: business rules (RBAC checks orchestration, workspace validation, borrow/lend logic)
-- **Repository layer**: persistence via Spring Data JPA
-- **Security layer**: JWT auth, CORS configuration, role/workspace authorization
+- Controller: handles requests
+- Service: business logic + RBAC
+- Repository: database layer
+- Security: JWT + authorization
 
-API documentation is available via Swagger/OpenAPI when running locally:
-
-- Swagger UI: `http://localhost:8080/swagger-ui.html`
-- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
-
-Deployed API docs (if enabled in production):
-
-- Swagger UI: `https://fintrix-app-backend.onrender.com/swagger-ui.html`
-- OpenAPI JSON: `https://fintrix-app-backend.onrender.com/v3/api-docs`
-
+Swagger:  
+https://fintrix-app-backend.onrender.com/swagger-ui.html
 ---
 
 ## Tech Stack
