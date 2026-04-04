@@ -31,7 +31,7 @@ public class BorrowTransactionService {
         Role actorRole = membershipService.getRoleOrThrow(workspaceId, borrower.getId());
         assertCanCreate(actorRole);
 
-        User lender = userService.findById(request.counterpartyUserId());
+        User lender = userService.findByEmail(request.counterpartyEmail().trim());
         validateParticipants(borrower.getId(), lender.getId());
 
         // Ensure both participants are members of this workspace (prevents cross-workspace leakage).
@@ -55,7 +55,7 @@ public class BorrowTransactionService {
         Role actorRole = membershipService.getRoleOrThrow(workspaceId, lender.getId());
         assertCanCreate(actorRole);
 
-        User borrower = userService.findById(request.counterpartyUserId());
+        User borrower = userService.findByEmail(request.counterpartyEmail().trim());
         validateParticipants(lender.getId(), borrower.getId());
 
         membershipService.getRoleOrThrow(workspaceId, borrower.getId());

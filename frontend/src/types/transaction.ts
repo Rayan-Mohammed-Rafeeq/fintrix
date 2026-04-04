@@ -26,7 +26,7 @@ export interface Transaction {
 }
 
 export interface TransactionRequest {
-  counterpartyUserId: number
+  counterpartyEmail: string
   amount: number
   description: string
 }

@@ -111,7 +111,7 @@ class TransactionControllerIntegrationTest {
         String lenderToken = jwtService.generateToken(lender);
         String outsiderToken = jwtService.generateToken(outsider);
 
-        TransactionRequest request = new TransactionRequest(lender.getId(), new java.math.BigDecimal("500.00"), "Short-term loan");
+        TransactionRequest request = new TransactionRequest(lender.getEmail(), new java.math.BigDecimal("500.00"), "Short-term loan");
 
         String response = mockMvc.perform(post("/api/v1/workspaces/{workspaceId}/transactions/borrow", workspace.getId())
                         .header("Authorization", "Bearer " + borrowerToken)

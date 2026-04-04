@@ -29,7 +29,7 @@ import { WorkspaceMembersPage } from '@/pages/workspaces/WorkspaceMembersPage'
   import { WorkspacesPage } from '@/pages/workspaces/WorkspacesPage'
 
 function RoleRedirect() {
-  const { user, isAuthenticated, isReady } = useAuth()
+  const { isAuthenticated, isReady } = useAuth()
 
   if (!isReady) {
     return null
@@ -39,7 +39,7 @@ function RoleRedirect() {
     return <Navigate to="/login" replace />
   }
 
-  return <Navigate to={getDefaultRouteByRole(user?.role)} replace />
+  return <Navigate to={getDefaultRouteByRole()} replace />
 }
 
 function AppRoutes() {

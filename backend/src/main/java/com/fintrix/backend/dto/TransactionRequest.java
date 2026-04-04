@@ -1,14 +1,16 @@
 package com.fintrix.backend.dto;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
 public record TransactionRequest(
-        @NotNull(message = "Counterparty user id is required")
-        Long counterpartyUserId,
+        @NotBlank(message = "Counterparty email is required")
+        @Email(message = "Counterparty email must be a valid email")
+        String counterpartyEmail,
 
         @NotNull(message = "Amount is required")
         @DecimalMin(value = "0.01", message = "Amount must be greater than zero")

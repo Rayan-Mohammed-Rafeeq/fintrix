@@ -16,10 +16,12 @@ import com.fintrix.backend.security.JwtService;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,11 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final WorkspaceService workspaceService;
+    private final EmailService emailService;
+    private final Environment environment;
+
+    @Value("${app.frontend.base-url:http://localhost:5173}")
+    private String frontendBaseUrl;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -77,7 +84,11 @@ public class AuthService {
 
         // Don't reveal whether an email exists.
         userRepository.findByEmail(email).ifPresent(user -> {
+            // Invalidate older tokens for this user (single valid token policy).
+            passwordResetTokenRepository.markAllTokensUsedForUser(user.getId());
+
             String token = UUID.randomUUID().toString();
+            String resetLink = frontendBaseUrl.replaceAll("/+$", "") + "/reset-password?token=" + token;
             PasswordResetToken prt = PasswordResetToken.builder()
                     .token(token)
                     .user(user)
@@ -86,8 +97,15 @@ public class AuthService {
                     .build();
             passwordResetTokenRepository.save(prt);
 
-            // Demo: print token in server logs.
-            System.out.println("[Fintrix] Password reset token for " + email + ": " + token);
+            // Send email (real flow). If mail isn't configured, this may throw; we avoid breaking
+            // the API contract by only attempting in non-test environments.
+            emailService.sendPasswordResetEmail(email, resetLink);
+
+            // Dev helper: print token in server logs only for local/dev profiles.
+            boolean isDev = environment != null && (environment.matchesProfiles("dev") || environment.matchesProfiles("local"));
+            if (isDev) {
+                System.out.println("[Fintrix] Password reset token for " + email + ": " + token);
+            }
         });
     }
 

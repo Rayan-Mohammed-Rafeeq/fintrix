@@ -1,4 +1,4 @@
-import { Outlet, Navigate } from 'react-router-dom'
+import { Outlet, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import {
   BarChart3,
@@ -6,11 +6,11 @@ import {
   Lock,
   ShieldCheck,
   TrendingUp,
-  Wallet,
   Zap,
 } from 'lucide-react'
 import { getDefaultRouteByRole } from '@/lib/routeUtils'
 import { AuthBackdrop } from '@/components/auth/AuthBackdrop'
+import { AppFooter } from '@/components/layout/AppFooter'
 
 const features = [
   {
@@ -42,14 +42,17 @@ const stats = [
 ]
 
 export function AuthLayout() {
-  const { isAuthenticated, isReady, user } = useAuth()
+  const { isAuthenticated, isReady } = useAuth()
+  const location = useLocation()
+
+  const showFooter = location.pathname === '/login' || location.pathname === '/register'
 
   if (!isReady) {
     return null
   }
 
   if (isAuthenticated) {
-    return <Navigate to={getDefaultRouteByRole(user?.role)} replace />
+    return <Navigate to={getDefaultRouteByRole()} replace />
   }
 
   return (
@@ -57,7 +60,8 @@ export function AuthLayout() {
       <AuthBackdrop />
 
       {/* Full-screen centered container */}
-      <div className="relative z-10 flex min-h-screen items-center justify-center">
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <div className="flex flex-1 items-center justify-center pt-12 sm:pt-14 lg:pt-16">
         <div className="w-full max-w-7xl px-6 sm:px-10 lg:px-16">
           {/* Balanced split layout */}
           <div className="grid w-full items-center gap-12 lg:grid-cols-2">
@@ -67,12 +71,9 @@ export function AuthLayout() {
 
               {/* Logo */}
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/10 shadow-lg shadow-emerald-500/10">
-                  <Wallet className="h-6 w-6 text-emerald-400" />
-                </div>
+                <img src="/icon.png" alt="Fintrix" className="h-11 w-11" loading="eager" />
                 <div>
                   <span className="text-2xl font-bold tracking-tight">Fintrix</span>
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-white/40">Finance OS</p>
                 </div>
               </div>
 
@@ -146,6 +147,22 @@ export function AuthLayout() {
 
           </div>
         </div>
+        </div>
+
+        {/* Page footer (ONLY on login page) */}
+        {showFooter && (
+          <div className="mt-20 sm:mt-24 lg:mt-28">
+            {/* subtle separation from main content */}
+            <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-16">
+              <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            </div>
+
+            {/* soft fade into footer to avoid harsh edge */}
+            <div className="pointer-events-none h-10 bg-gradient-to-b from-transparent via-[#0a0f1c]/60 to-[#0a0f1c]" />
+
+            <AppFooter />
+          </div>
+        )}
       </div>
     </div>
   )

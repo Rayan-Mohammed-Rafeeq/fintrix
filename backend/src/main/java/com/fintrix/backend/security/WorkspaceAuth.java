@@ -2,6 +2,7 @@ package com.fintrix.backend.security;
 
 import com.fintrix.backend.enums.Role;
 import com.fintrix.backend.service.MembershipService;
+import com.fintrix.backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 public class WorkspaceAuth {
 
     private final MembershipService membershipService;
+    private final UserService userService;
 
     public boolean hasAnyRole(Authentication authentication, Long workspaceId, String... roles) {
         if (authentication == null || !authentication.isAuthenticated() || workspaceId == null) {
@@ -36,11 +38,13 @@ public class WorkspaceAuth {
     }
 
     private Long extractUserId(Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof AuthenticatedUser) {
-            return ((AuthenticatedUser) principal).getId();
+        // Most reliable: resolve from authentication name (email/subject) and load user.
+        // Works across UsernamePasswordAuthenticationToken, JWT filter, etc.
+        String email = authentication.getName();
+        if (email == null || email.isBlank()) {
+            return null;
         }
-        return null;
+        return userService.findByEmail(email).getId();
     }
 }
 

@@ -5,7 +5,6 @@ import {
   ArrowLeftRight,
   Users,
   LogOut,
-  ShieldCheck,
   TrendingUp,
   Wallet,
 } from 'lucide-react'
@@ -32,29 +31,6 @@ const userNavItems = [
   {
     title: 'Transactions',
     href: '/transactions',
-    icon: ArrowLeftRight,
-  },
-]
-
-const adminNavItems = [
-  {
-    title: 'Admin Overview',
-    href: '/admin',
-    icon: ShieldCheck,
-  },
-  {
-    title: 'All Users',
-    href: '/admin/users',
-    icon: Users,
-  },
-  {
-    title: 'All Expenses',
-    href: '/admin/expenses',
-    icon: Receipt,
-  },
-  {
-    title: 'All Transactions',
-    href: '/admin/transactions',
     icon: ArrowLeftRight,
   },
 ]
@@ -90,9 +66,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
       {/* Logo */}
       <div className="flex h-16 items-center gap-2 px-6">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-          <Wallet className="h-5 w-5 text-primary-foreground" />
-        </div>
+        <img src="/icon.png" alt="Fintrix" className="h-9 w-9" loading="eager" />
         <span className="text-xl font-bold tracking-tight">Fintrix</span>
       </div>
 
@@ -161,34 +135,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             </div>
           )}
 
-          {isAdmin && (
-            <div className="space-y-1">
-              <p className="px-3 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/50">
-                Administration
-              </p>
-              <nav className="space-y-1">
-                {adminNavItems.map((item) => {
-                  const isActive = location.pathname === item.href || location.pathname.startsWith(`${item.href}/`)
-                  return (
-                    <Link
-                      key={item.href}
-                      to={item.href}
-                      onClick={handleNavClick}
-                      className={cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-                        isActive
-                          ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-                          : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground',
-                      )}
-                    >
-                      <item.icon className="h-5 w-5" />
-                      {item.title}
-                    </Link>
-                  )
-                })}
-              </nav>
-            </div>
-          )}
+          {/* (Administration section removed from sidebar) */}
 
           {/* Quick Stats */}
           <div className="space-y-2">

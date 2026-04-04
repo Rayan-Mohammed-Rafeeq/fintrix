@@ -12,7 +12,6 @@ import {
   Loader2,
   Lock,
   Mail,
-  Wallet,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -49,14 +48,13 @@ export function LoginPage() {
   // We determine the role after auth succeeds (from backend response / JWT).
   const isAdmin = false
   const roleLabel = 'Sign in'
-  const RoleIcon = Wallet
 
   const onSubmit = (data: LoginFormData) => {
     mutation.mutate(data, {
       onSuccess: (authResponse) => {
         login(authResponse)
         toast.success(`Welcome back, ${getRoleLabel(authResponse.role)}!`)
-        navigate(getDefaultRouteByRole(authResponse.role), { replace: true })
+        navigate(getDefaultRouteByRole(), { replace: true })
       },
       onError: () => {
         toast.error('Invalid email or password')
@@ -89,7 +87,7 @@ export function LoginPage() {
         <span
           className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-widest ${roleAccent.pill}`}
         >
-          <RoleIcon className="h-3 w-3" />
+          <img src="/icon.png" alt="Fintrix" className="h-3 w-3" loading="eager" />
           {roleLabel} access
         </span>
 
@@ -105,17 +103,7 @@ export function LoginPage() {
       {/* ── Icon + headline ─────────────────────────────────────── */}
       <div className="mb-8 space-y-4 text-center">
         {/* Floating icon */}
-        <div className="relative mx-auto h-fit w-fit">
-          <div
-            className={`relative mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border ${roleAccent.icon} shadow-lg ${roleAccent.glow} auth-float`}
-          >
-            <RoleIcon className="h-8 w-8" />
-            {/* subtle pulse ring */}
-            <span
-              className={`absolute inset-0 rounded-2xl border ${roleAccent.icon} animate-ping opacity-30`}
-            />
-          </div>
-        </div>
+        <img src="/icon.png" alt="Fintrix" className="mx-auto h-16 w-16" loading="eager" />
 
         <div className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight text-white">

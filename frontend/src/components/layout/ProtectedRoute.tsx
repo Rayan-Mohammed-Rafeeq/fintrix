@@ -21,7 +21,7 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to={getDefaultRouteByRole(user.role)} replace />
+    return <Navigate to={getDefaultRouteByRole()} replace />
   }
 
   return <>{children}</>

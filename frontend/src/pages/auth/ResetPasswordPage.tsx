@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { ArrowLeft, KeyRound, Loader2 } from 'lucide-react'
 
@@ -19,11 +19,18 @@ type FormData = z.infer<typeof schema>
 
 export function ResetPasswordPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const tokenFromQuery = searchParams.get('token') ?? ''
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>({ resolver: zodResolver(schema) })
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      token: tokenFromQuery,
+    },
+  })
 
   const mutation = useResetPasswordMutation()
 
@@ -61,7 +68,7 @@ export function ResetPasswordPage() {
         </div>
         <h1 className="text-2xl font-bold tracking-tight text-white">Reset password</h1>
         <p className="text-sm text-white/50">
-          Paste the reset token from the backend logs and choose a new password.
+          If you opened this page from the email link, your token is filled in automatically.
         </p>
       </div>
 

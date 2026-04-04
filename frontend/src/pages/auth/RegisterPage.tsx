@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { ArrowLeft, Eye, EyeOff, Loader2, Wallet } from 'lucide-react'
+import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -33,7 +33,6 @@ export function RegisterPage() {
 
   // Roles are assigned by the backend. New users become ADMIN of their own workspace.
   const isAdmin = false
-  const RoleIcon = Wallet
 
   const {
     register: registerField,
@@ -56,7 +55,7 @@ export function RegisterPage() {
         onSuccess: (authResponse) => {
           login(authResponse)
           toast.success(`${getRoleLabel(authResponse.role)} account created successfully!`)
-          navigate(getDefaultRouteByRole(authResponse.role), { replace: true })
+          navigate(getDefaultRouteByRole(), { replace: true })
         },
         onError: () => {
           toast.error('Failed to create account. Please try again.')
@@ -81,9 +80,7 @@ export function RegisterPage() {
       </div>
 
       <div className="space-y-3 text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary auth-float">
-          <RoleIcon className="h-7 w-7" />
-        </div>
+        <img src="/icon.png" alt="Fintrix" className="mx-auto h-14 w-14" loading="eager" />
         <div className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">
             {isAdmin ? 'Create your Administrator account' : 'Create your Member account'}

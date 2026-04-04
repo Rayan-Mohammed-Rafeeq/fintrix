@@ -221,7 +221,7 @@ export function DashboardPage() {
                 <AreaChart data={expenseTrend}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis dataKey="month" className="text-xs" />
-                  <YAxis className="text-xs" tickFormatter={(v) => `$${v}`} />
+                  <YAxis className="text-xs" tickFormatter={(v) => formatCurrency(Number(v))} />
                   <Tooltip formatter={(value: number) => formatCurrency(value)} />
                   <Area
                     type="monotone"
@@ -254,7 +254,7 @@ export function DashboardPage() {
                 <BarChart data={borrowVsLend}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                   <XAxis dataKey="name" className="text-xs" />
-                  <YAxis className="text-xs" tickFormatter={(v) => `$${v}`} />
+                  <YAxis className="text-xs" tickFormatter={(v) => formatCurrency(Number(v))} />
                   <Tooltip formatter={(value: number) => formatCurrency(value)} />
                   <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
                     <Cell fill="hsl(var(--chart-3))" />

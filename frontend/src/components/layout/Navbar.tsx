@@ -23,9 +23,6 @@ interface NavbarProps {
 export function Navbar({ onMenuClick }: NavbarProps) {
   const { user, logout } = useAuth()
   const isAdmin = user?.role === 'ADMIN'
-  const HomeIcon = isAdmin ? ShieldCheck : Wallet
-  const homeHref = isAdmin ? '/admin' : '/dashboard'
-  const workspaceLabel = isAdmin ? 'Admin Workspace' : 'Member Workspace'
 
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-border bg-card px-4 md:px-6">
@@ -40,24 +37,7 @@ export function Navbar({ onMenuClick }: NavbarProps) {
         <span className="sr-only">Toggle menu</span>
       </Button>
 
-      <div className="flex min-w-0 flex-1 items-center gap-3 md:flex-none">
-        <Button
-          asChild
-          variant="ghost"
-          className="hidden h-auto items-center gap-2 px-2 py-1.5 md:inline-flex"
-        >
-          <Link to={homeHref}>
-            <HomeIcon className="h-4 w-4" />
-            <span className="font-medium">{workspaceLabel}</span>
-          </Link>
-        </Button>
-        <Badge
-          variant={isAdmin ? 'secondary' : 'default'}
-          className="hidden sm:inline-flex"
-        >
-          {getRoleLabel(user?.role)} mode
-        </Badge>
-      </div>
+
 
       {/* Search */}
       <div className="hidden flex-1 md:flex">
