@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: fintrix-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-fintrix}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      # Provide POSTGRES_PASSWORD via environment for anything beyond local dev.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - fintrix-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-fintrix}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  fintrix-postgres-data:
