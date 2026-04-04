@@ -293,12 +293,6 @@ Add screenshots or a short demo video/GIF here:
 - Audit logs for admin actions
 - Improved reporting exports (CSV/PDF)
 
----
 
-## Additional Documentation
-
-- Backend docs: [`backend/README.md`](./backend/README.md)
-- Frontend docs: [`frontend/README.md`](./frontend/README.md)
-- Database reset notes: [`backend/RESET_DB_README.md`](./backend/RESET_DB_README.md)
 
 
