@@ -10,6 +10,7 @@ export interface TransactionApiResponse {
   lenderName: string
   description: string
   status: TransactionStatus
+  transactionDate: string
   createdAt: string
 }
 
@@ -20,6 +21,7 @@ export interface Transaction {
   personName: string
   description: string
   status: TransactionStatus
+  transactionDate: string
   createdAt: string
   borrowerId: number
   lenderId: number
@@ -29,5 +31,6 @@ export interface TransactionRequest {
   counterpartyEmail: string
   amount: number
   description: string
+  transactionDate?: string
 }
 

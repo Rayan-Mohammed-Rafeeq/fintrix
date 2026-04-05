@@ -66,7 +66,15 @@ export const workspaceApi = {
   },
 
   async removeMember(workspaceId: number, userId: number): Promise<void> {
-    await apiClient.delete(`/api/v1/workspaces/${workspaceId}/members/${userId}`)
+    await apiClient.delete(`/api/v1/workspaces/${workspaceId}/members/user/${userId}`)
+  },
+
+  async leaveWorkspace(workspaceId: number): Promise<void> {
+    await apiClient.delete(`/api/v1/workspaces/${workspaceId}/members/me`)
+  },
+
+  async deleteWorkspace(workspaceId: number): Promise<void> {
+    await apiClient.delete(`/api/v1/workspaces/${workspaceId}`)
   },
 }
 

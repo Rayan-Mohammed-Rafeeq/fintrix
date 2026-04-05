@@ -13,6 +13,7 @@ import com.fintrix.backend.repository.MembershipRepository;
 import com.fintrix.backend.repository.UserRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ public class MembershipService {
     private final MembershipRepository membershipRepository;
     private final UserRepository userRepository;
     private final WorkspaceService workspaceService;
+    private final UserService userService;
 
     @Transactional(readOnly = true)
     public Role getRoleOrThrow(Long workspaceId, Long userId) {
@@ -92,6 +94,16 @@ public class MembershipService {
             }
         }
         membershipRepository.delete(membership);
+    }
+
+    /**
+     * Leave a workspace by removing the current user's membership.
+     * Prevents leaving if the user is the last ADMIN.
+     */
+    @Transactional
+    public void leaveWorkspace(Authentication authentication, Long workspaceId) {
+        User currentUser = userService.getCurrentUser(authentication);
+        removeMember(workspaceId, currentUser.getId());
     }
 }
 

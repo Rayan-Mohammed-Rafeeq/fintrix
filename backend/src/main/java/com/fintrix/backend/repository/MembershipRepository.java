@@ -19,5 +19,7 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
     boolean existsByWorkspaceIdAndUserId(Long workspaceId, Long userId);
 
     long countByWorkspaceIdAndRole(Long workspaceId, Role role);
+
+    void deleteAllByWorkspaceId(Long workspaceId);
 }
 

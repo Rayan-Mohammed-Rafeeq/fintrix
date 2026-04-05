@@ -53,11 +53,19 @@ public class WorkspaceMemberController {
         return ResponseEntity.ok(membershipService.updateMemberRole(workspaceId, userId, request));
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/user/{userId}")
     @Operation(summary = "Remove a member from a workspace (ADMIN only)")
     @PreAuthorize("@workspaceAuth.isAdmin(authentication, #workspaceId)")
     public ResponseEntity<Void> removeMember(@PathVariable Long workspaceId, @PathVariable Long userId) {
         membershipService.removeMember(workspaceId, userId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/me")
+    @Operation(summary = "Leave a workspace (removes your own membership)")
+    @PreAuthorize("@workspaceAuth.hasAnyRole(authentication, #workspaceId, 'VIEWER','ANALYST','ADMIN')")
+    public ResponseEntity<Void> leaveWorkspace(Authentication authentication, @PathVariable Long workspaceId) {
+        membershipService.leaveWorkspace(authentication, workspaceId);
         return ResponseEntity.noContent().build();
     }
 }

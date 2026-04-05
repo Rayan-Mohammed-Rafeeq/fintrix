@@ -13,6 +13,7 @@ function mapTransaction(item: TransactionApiResponse, currentUserId?: number): T
     personName: isBorrow ? item.lenderName : item.borrowerName,
     description: item.description,
     status: item.status,
+    transactionDate: item.transactionDate,
     createdAt: item.createdAt,
     borrowerId: item.borrowerId,
     lenderId: item.lenderId,

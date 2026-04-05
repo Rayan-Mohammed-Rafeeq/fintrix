@@ -37,5 +37,7 @@ public interface BorrowTransactionRepository extends JpaRepository<BorrowTransac
         """)
     java.util.Optional<BorrowTransaction> findByIdAndWorkspaceId(@Param("id") Long id,
                                                                  @Param("workspaceId") Long workspaceId);
+
+    void deleteAllByWorkspaceId(Long workspaceId);
 }
 

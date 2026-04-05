@@ -35,6 +35,26 @@ export function useCreateWorkspaceMutation() {
   })
 }
 
+export function useDeleteWorkspaceMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (workspaceId: number) => workspaceApi.deleteWorkspace(workspaceId),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['workspaces', 'mine'] })
+    },
+  })
+}
+
+export function useLeaveWorkspaceMutation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (workspaceId: number) => workspaceApi.leaveWorkspace(workspaceId),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['workspaces', 'mine'] })
+    },
+  })
+}
+
 export function useWorkspaceMembersQuery(workspaceId?: number) {
   return useQuery({
     queryKey: ['workspaces', workspaceId, 'members'],

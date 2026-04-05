@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -55,6 +56,13 @@ public class BorrowTransaction {
     @Column(nullable = false, length = 20)
     private TransactionStatus status;
 
+    /**
+     * User-supplied date for when the transaction occurred.
+     * Separate from createdAt which is the server timestamp for record creation.
+     */
+    @Column(name = "transaction_date", nullable = false)
+    private LocalDate transactionDate;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -62,6 +70,9 @@ public class BorrowTransaction {
     void onCreate() {
         if (createdAt == null) {
             createdAt = LocalDateTime.now();
+        }
+        if (transactionDate == null) {
+            transactionDate = createdAt.toLocalDate();
         }
         if (status == null) {
             status = TransactionStatus.PENDING;

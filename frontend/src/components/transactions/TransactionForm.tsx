@@ -18,6 +18,12 @@ import { MemberAutocomplete } from '@/components/workspaces/MemberAutocomplete'
 const transactionSchema = z.object({
   counterpartyEmail: z.string().trim().email('Valid email is required'),
   amount: z.coerce.number().positive('Amount must be greater than 0'),
+  transactionDate: z
+    .string()
+    .trim()
+    .min(1, 'Date is required')
+    // HTML date input returns YYYY-MM-DD
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format'),
   description: z.preprocess(
     (val) => (typeof val === 'string' ? val.trim() : ''),
     z.string().min(1, 'Description is required'),
@@ -57,6 +63,7 @@ export function TransactionForm({ type, onSubmit, isLoading = false }: Transacti
     defaultValues: {
       counterpartyEmail: '',
       amount: 0,
+      transactionDate: new Date().toISOString().slice(0, 10),
       description: '',
     },
   })
@@ -228,6 +235,14 @@ export function TransactionForm({ type, onSubmit, isLoading = false }: Transacti
           </div>
           {errors.amount && (
             <p className="text-sm text-destructive">{errors.amount.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="transactionDate">Date</Label>
+          <Input id="transactionDate" type="date" {...register('transactionDate')} />
+          {errors.transactionDate && (
+            <p className="text-sm text-destructive">{errors.transactionDate.message}</p>
           )}
         </div>
       </div>

@@ -8,6 +8,8 @@ import com.fintrix.backend.enums.Role;
 import com.fintrix.backend.exception.ResourceNotFoundException;
 import com.fintrix.backend.repository.MembershipRepository;
 import com.fintrix.backend.repository.WorkspaceRepository;
+import com.fintrix.backend.repository.BorrowTransactionRepository;
+import com.fintrix.backend.repository.ExpenseRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -20,6 +22,8 @@ public class WorkspaceService {
 
     private final WorkspaceRepository workspaceRepository;
     private final MembershipRepository membershipRepository;
+    private final BorrowTransactionRepository borrowTransactionRepository;
+    private final ExpenseRepository expenseRepository;
     private final UserService userService;
 
     /**
@@ -73,6 +77,25 @@ public class WorkspaceService {
                         m.getWorkspace().getName(),
                         m.getWorkspace().getOwnerId()))
                 .toList();
+    }
+
+    /**
+     * Deletes a workspace and all workspace-scoped data.
+     *
+     * Authorization is enforced at controller level via @PreAuthorize(@workspaceAuth.isAdmin).
+     */
+    @Transactional
+    public void deleteWorkspace(Authentication authentication, Long workspaceId) {
+        // ensure workspace exists (and gives a consistent 404 if not)
+        Workspace workspace = getWorkspace(workspaceId);
+
+        // Delete children first to avoid FK constraint violations.
+        // NOTE: We keep this explicit rather than relying on cascades across all entities.
+        borrowTransactionRepository.deleteAllByWorkspaceId(workspaceId);
+        expenseRepository.deleteAllByWorkspaceId(workspaceId);
+        membershipRepository.deleteAllByWorkspaceId(workspaceId);
+
+        workspaceRepository.delete(workspace);
     }
 }
 

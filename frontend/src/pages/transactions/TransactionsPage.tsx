@@ -245,7 +245,7 @@ export function TransactionsPage() {
                       </TableCell>
                       <TableCell className="font-medium">{transaction.personName}</TableCell>
                       <TableCell className="max-w-[150px] truncate">{transaction.description}</TableCell>
-                      <TableCell>{formatDate(transaction.createdAt)}</TableCell>
+                      <TableCell>{formatDate(transaction.transactionDate || transaction.createdAt)}</TableCell>
                       <TableCell>
                         <Badge
                           variant={transaction.status === 'PAID' ? 'outline' : 'destructive'}

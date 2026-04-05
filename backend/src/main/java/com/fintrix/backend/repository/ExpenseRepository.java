@@ -15,4 +15,6 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     List<Expense> findByWorkspaceIdOrderByDateDescCreatedAtDesc(Long workspaceId);
 
     Optional<Expense> findByIdAndWorkspaceId(Long id, Long workspaceId);
+
+    void deleteAllByWorkspaceId(Long workspaceId);
 }

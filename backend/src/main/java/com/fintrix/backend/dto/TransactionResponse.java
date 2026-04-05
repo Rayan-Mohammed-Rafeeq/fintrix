@@ -2,6 +2,7 @@ package com.fintrix.backend.dto;
 
 import com.fintrix.backend.entity.TransactionStatus;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record TransactionResponse(
@@ -13,6 +14,7 @@ public record TransactionResponse(
         String lenderName,
         String description,
         TransactionStatus status,
+        LocalDate transactionDate,
         LocalDateTime createdAt
 ) {
 }

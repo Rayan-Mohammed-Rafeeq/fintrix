@@ -11,6 +11,7 @@ import com.fintrix.backend.entity.Workspace;
 import com.fintrix.backend.enums.Role;
 import com.fintrix.backend.repository.BorrowTransactionRepository;
 import java.util.List;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,8 @@ public class BorrowTransactionService {
         membershipService.getRoleOrThrow(workspaceId, lender.getId());
         Workspace workspace = workspaceService.getWorkspace(workspaceId);
 
+        LocalDate txDate = request.transactionDate() != null ? request.transactionDate() : LocalDate.now();
+
         BorrowTransaction savedTransaction = transactionRepository.save(BorrowTransaction.builder()
                 .amount(request.amount())
                 .borrower(borrower)
@@ -46,6 +49,7 @@ public class BorrowTransactionService {
                 .workspace(workspace)
                 .description(request.description().trim())
                 .status(TransactionStatus.PENDING)
+                .transactionDate(txDate)
                 .build());
         return toResponse(savedTransaction);
     }
@@ -62,6 +66,8 @@ public class BorrowTransactionService {
         membershipService.getRoleOrThrow(workspaceId, borrower.getId());
         Workspace workspace = workspaceService.getWorkspace(workspaceId);
 
+        LocalDate txDate = request.transactionDate() != null ? request.transactionDate() : LocalDate.now();
+
         BorrowTransaction savedTransaction = transactionRepository.save(BorrowTransaction.builder()
                 .amount(request.amount())
                 .borrower(borrower)
@@ -69,6 +75,7 @@ public class BorrowTransactionService {
                 .workspace(workspace)
                 .description(request.description().trim())
                 .status(TransactionStatus.PENDING)
+                .transactionDate(txDate)
                 .build());
         return toResponse(savedTransaction);
     }
@@ -109,6 +116,7 @@ public class BorrowTransactionService {
                 transaction.getLender().getName(),
                 transaction.getDescription(),
                 transaction.getStatus(),
+                transaction.getTransactionDate(),
                 transaction.getCreatedAt());
     }
 
