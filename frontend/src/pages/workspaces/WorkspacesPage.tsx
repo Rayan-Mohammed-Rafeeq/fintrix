@@ -130,7 +130,6 @@ export function WorkspacesPage() {
                     <button type="button" onClick={() => setActiveWorkspaceId(w.id)} className="flex min-w-0 flex-1 items-center justify-between">
                       <div className="min-w-0">
                         <div className="truncate font-medium">{w.name}</div>
-                        <div className="text-xs text-muted-foreground">Owner ID: {w.ownerId}</div>
                       </div>
                       {isActive ? (
                         <span className="rounded-full bg-primary px-2 py-1 text-xs text-primary-foreground">Active</span>
