@@ -46,10 +46,48 @@ Key overrides are environment-variable friendly:
 - `DB_PASSWORD`
 - `JWT_SECRET`
 - `JWT_EXPIRATION_MS`
-- `BOOTSTRAP_ADMIN_ENABLED`
-- `BOOTSTRAP_ADMIN_NAME`
-- `BOOTSTRAP_ADMIN_EMAIL`
-- `BOOTSTRAP_ADMIN_PASSWORD`
+
+### `application.properties` (what you must set)
+
+The backend reads most secrets/connection values from environment variables (see `src/main/resources/application.properties`).
+
+Minimum required to start the app locally:
+
+| Property in `application.properties` | Env var | Example value |
+|---|---|---|
+| `spring.datasource.url=${DB_URL}` | `DB_URL` | `jdbc:postgresql://localhost:5432/fintrix` |
+| `spring.datasource.username=${DB_USERNAME}` | `DB_USERNAME` | `postgres` |
+| `spring.datasource.password=${DB_PASSWORD}` | `DB_PASSWORD` | `postgres` |
+| `app.jwt.secret=${JWT_SECRET}` | `JWT_SECRET` | `dev-secret-change-me` |
+| `app.jwt.expiration-ms=${JWT_EXPIRATION_MS}` | `JWT_EXPIRATION_MS` | `86400000` (1 day) |
+
+Optional (only needed for specific features):
+
+| Feature | Env var(s) | Notes |
+|---|---|---|
+| CORS | `APP_CORS_ALLOWED_ORIGINS` | Default allows `http://localhost:*` and `http://127.0.0.1:*` |
+| Password reset link base | `APP_FRONTEND_BASE_URL` | Default `http://localhost:3000` (Vite is usually `5173`, so change if you want links to open correctly) |
+| Admin bootstrap user | `BOOTSTRAP_ADMIN_*` | Disabled by default (not required for local run) |
+| SMTP (forgot-password emails) | `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD` | SMTP properties are commented out by default in `application.properties` |
+
+#### Windows (cmd.exe) example
+
+From `backend/` set the env vars (current terminal only):
+
+```bat
+set DB_URL=jdbc:postgresql://localhost:5432/fintrix
+set DB_USERNAME=postgres
+set DB_PASSWORD=postgres
+
+set JWT_SECRET=dev-secret-change-me
+set JWT_EXPIRATION_MS=86400000
+```
+
+Then run:
+
+```bat
+mvn spring-boot:run
+```
 
 ## Local PostgreSQL with Docker
 ```yaml
@@ -70,15 +108,6 @@ docker compose down -v
 docker compose up -d
 ```
 
-## Optional Admin Bootstrap
-Set these before startup if you want an admin user created once when the email does not already exist:
-
-```bat
-set BOOTSTRAP_ADMIN_ENABLED=true
-set BOOTSTRAP_ADMIN_NAME=Fintrix Admin
-set BOOTSTRAP_ADMIN_EMAIL=admin@fintrix.local
-set BOOTSTRAP_ADMIN_PASSWORD=ChangeMe123!
-```
 
 ## Run
 ```bat

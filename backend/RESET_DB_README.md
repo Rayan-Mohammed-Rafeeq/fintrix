@@ -1,29 +1,34 @@
 # Fintrix DB Reset (Dev)
 
-Docker engine is not available on this machine (CLI cannot connect), and `psql` is not in PATH.
+This file is **only needed** if your local database schema/data is out of sync (for example, you ran an older version of the backend locally and then pulled newer code).
 
-This reset uses **Option A** (wipe old data): we drop and recreate the `fintrix_db` database.
+## What changed
 
-## Steps (pgAdmin)
-1. Open **pgAdmin** → connect to your local Postgres server.
-2. Open **Query Tool** on the `postgres` database.
-3. Paste and execute the contents of `db-reset.sql`.
-4. Start backend:
+The backend now uses **Flyway migrations** (`src/main/resources/db/migration`).
 
-```cmd
-cd /d E:\Fintrix\backend
+- On startup, Flyway automatically creates/updates the schema.
+- Hibernate is configured to `validate` the schema (instead of auto-updating tables).
+
+Recruiters running the project for the first time typically **do not need** any DB reset steps.
+
+## Easiest reset (Docker)
+
+If you're using the provided `docker-compose.yml`, wiping the Postgres volume is the simplest way to get a clean DB:
+
+```bat
+cd /d E:\fintrix\backend
+docker compose down -v
+docker compose up -d
+```
+
+Then start the backend (Flyway will recreate the schema):
+
+```bat
+cd /d E:\fintrix\backend
 .\mvnw.cmd spring-boot:run
 ```
 
-Because `application.properties` uses:
-
-```properties
-spring.jpa.hibernate.ddl-auto=${JPA_DDL_AUTO:create-drop}
-```
-
-Hibernate will recreate the schema on startup, now clean and consistent.
-
 ## Verify
-- `GET http://localhost:8080/api/v1/workspaces` should work after login.
-- `POST http://localhost:8080/api/v1/workspaces` should now return 200 with the created workspace.
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- After login, `GET http://localhost:8080/api/v1/workspaces` should work.
 
