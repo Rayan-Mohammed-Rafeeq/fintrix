@@ -24,6 +24,7 @@ public class JwtService {
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
+        // embed minimal identity info used by the frontend and for debugging/auditing
         claims.put("userId", user.getId());
         claims.put("role", user.getRole().name());
         return generateToken(claims, user.getEmail());
@@ -83,6 +84,7 @@ public class JwtService {
             byte[] keyBytes = Decoders.BASE64.decode(secret);
             return Keys.hmacShaKeyFor(keyBytes);
         }
+        // treat everything else as a literal secret (useful for local/dev env vars)
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 

@@ -45,6 +45,7 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) {
         String email = normalizeEmail(request.email());
         if (userRepository.existsByEmail(email)) {
+            // avoid duplicate accounts; email is the natural unique identifier
             throw new DuplicateResourceException("An account with this email already exists");
         }
 
@@ -104,6 +105,7 @@ public class AuthService {
             // Dev helper: print token in server logs only for local/dev profiles.
             boolean isDev = environment != null && (environment.matchesProfiles("dev") || environment.matchesProfiles("local"));
             if (isDev) {
+                // local-only helper so you can test the reset flow without an email provider
                 System.out.println("[Fintrix] Password reset token for " + email + ": " + token);
             }
         });
@@ -115,6 +117,7 @@ public class AuthService {
                 .orElseThrow(() -> new BadCredentialsException("Invalid or expired reset token"));
 
         if (prt.isUsed() || prt.getExpiresAt().isBefore(LocalDateTime.now())) {
+            // token replay/expiry protection
             throw new BadCredentialsException("Invalid or expired reset token");
         }
 

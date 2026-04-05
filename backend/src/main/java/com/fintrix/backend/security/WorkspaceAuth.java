@@ -16,14 +16,17 @@ public class WorkspaceAuth {
 
     public boolean hasAnyRole(Authentication authentication, Long workspaceId, String... roles) {
         if (authentication == null || !authentication.isAuthenticated() || workspaceId == null) {
+            // fail closed: missing auth or workspace context means no access
             return false;
         }
 
         Long userId = extractUserId(authentication);
         if (userId == null) {
+            // couldn't resolve a real user from the principal (e.g., anonymous/invalid token)
             return false;
         }
 
+        // membership lookup is the actual workspace RBAC gate (not the user's global role)
         Role actual = membershipService.getRoleOrThrow(workspaceId, userId);
         for (String r : roles) {
             if (r != null && actual.name().equalsIgnoreCase(r.trim())) {

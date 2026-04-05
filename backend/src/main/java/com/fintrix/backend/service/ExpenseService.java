@@ -96,6 +96,7 @@ public class ExpenseService {
         // - ADMIN can edit any record
         // - ANALYST can edit only records they created
         if (membershipRole == Role.ANALYST && !expense.getUser().getId().equals(currentUser.getId())) {
+            // analysts can't modify other members' data
             throw new UnauthorizedAccessException("Analysts can only edit their own records");
         }
 
@@ -165,11 +166,13 @@ public class ExpenseService {
     }
 
     private Expense findOwnedExpense(Long expenseId, Long userId) {
+        // tenant boundary for "my" endpoints
         return expenseRepository.findByIdAndUserId(expenseId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Expense not found with id: " + expenseId));
     }
 
     private Expense findWorkspaceExpense(Long workspaceId, Long expenseId) {
+        // tenant boundary for workspace-scoped endpoints
         return expenseRepository.findByIdAndWorkspaceId(expenseId, workspaceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Expense not found with id: " + expenseId));
     }

@@ -33,6 +33,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({BadCredentialsException.class, IllegalArgumentException.class, ConstraintViolationException.class})
     public ResponseEntity<ApiErrorResponse> handleBadRequest(RuntimeException ex, HttpServletRequest request) {
+        // BadCredentials => 401; input/constraint issues => 400
         HttpStatus status = ex instanceof BadCredentialsException ? HttpStatus.UNAUTHORIZED : HttpStatus.BAD_REQUEST;
         return build(status, ex.getMessage(), request.getRequestURI(), List.of());
     }
@@ -42,6 +43,7 @@ public class GlobalExceptionHandler {
         List<String> details = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
+                // keep payload simple for the frontend: "field: message"
                 .map(this::formatFieldError)
                 .toList();
         return build(HttpStatus.BAD_REQUEST, "Validation failed", request.getRequestURI(), details);

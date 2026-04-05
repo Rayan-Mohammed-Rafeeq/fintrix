@@ -28,6 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
         if (!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")) {
+            // no JWT provided -> let the request continue (will be blocked by security rules if needed)
             filterChain.doFilter(request, response);
             return;
         }
@@ -36,6 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             String username = jwtService.extractUsername(token);
             if (StringUtils.hasText(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
+                // only authenticate once per request to avoid clobbering an existing context
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 if (jwtService.isTokenValid(token, userDetails)) {
                     // Ensure principal includes user id for @workspaceAuth checks.
@@ -52,6 +54,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 }
             }
         } catch (JwtException | IllegalArgumentException ex) {
+            // invalid/expired token -> treat as anonymous (actual 401/403 handled downstream)
             SecurityContextHolder.clearContext();
         }
 

@@ -28,6 +28,7 @@ public class BorrowTransactionService {
     @Transactional
     public TransactionResponse createBorrow(Authentication authentication, Long workspaceId, TransactionRequest request) {
         User borrower = userService.getCurrentUser(authentication);
+        // require workspace membership + role before creating any transaction
         Role actorRole = membershipService.getRoleOrThrow(workspaceId, borrower.getId());
         assertCanCreate(actorRole);
 
@@ -87,10 +88,12 @@ public class BorrowTransactionService {
     @Transactional
     public TransactionResponse markAsPaid(Authentication authentication, Long workspaceId, Long transactionId) {
         User currentUser = userService.getCurrentUser(authentication);
+        // must at least belong to the workspace to interact with its transactions
         membershipService.getRoleOrThrow(workspaceId, currentUser.getId());
 
         BorrowTransaction transaction = transactionRepository.findByIdAndWorkspaceId(transactionId, workspaceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with id: " + transactionId));
+        // only participants can change status (prevents marking other people's transactions as paid)
         assertInvolvedUser(transaction, currentUser.getId());
         transaction.setStatus(TransactionStatus.PAID);
         return toResponse(transactionRepository.save(transaction));

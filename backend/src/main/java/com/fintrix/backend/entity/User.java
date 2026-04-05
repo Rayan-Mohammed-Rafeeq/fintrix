@@ -1,4 +1,3 @@
-// JPA entity representing a user in the Fintrix personal finance manager with roles ADMIN and USER
 package com.fintrix.backend.entity;
 
 import jakarta.persistence.CascadeType;
