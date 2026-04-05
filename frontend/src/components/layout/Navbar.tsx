@@ -17,13 +17,14 @@ import { useTheme } from '@/contexts/ThemeContext'
 import { getInitials } from '@/lib/utils'
 import { getRoleLabel } from '@/lib/roleUtils'
 import { cn } from '@/lib/utils'
+import { LogoutConfirm } from '@/components/auth/LogoutConfirm'
 
 interface NavbarProps {
   onMenuClick: () => void
 }
 
 export function Navbar({ onMenuClick }: NavbarProps) {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   const { toggleTheme, isDark } = useTheme()
   const isAdmin = user?.role === 'ADMIN'
 
@@ -109,7 +110,11 @@ export function Navbar({ onMenuClick }: NavbarProps) {
         {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-9 w-9 rounded-full ring-2 ring-primary/0 transition-all hover:ring-primary/40">
+            <Button
+              type="button"
+              variant="ghost"
+              className="relative h-9 w-9 rounded-full ring-2 ring-primary/0 transition-all hover:ring-primary/40"
+            >
               <Avatar className="h-9 w-9">
                 <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
                   {user?.name ? getInitials(user.name) : 'U'}
@@ -117,24 +122,6 @@ export function Navbar({ onMenuClick }: NavbarProps) {
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-60">
-            <DropdownMenuLabel>
-              <div className="flex flex-col space-y-1 py-1">
-                <p className="text-sm font-semibold">{user?.name}</p>
-                <p className="text-xs text-muted-foreground">{user?.email}</p>
-                <Badge variant="outline" className="mt-1 w-fit text-[10px] font-medium uppercase tracking-wider text-primary border-primary/30">
-                  {getRoleLabel(user?.role)}
-                </Badge>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Profile</DropdownMenuItem>
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive">
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
         </DropdownMenu>
       </div>
     </header>

@@ -91,14 +91,14 @@ export function TransactionsPage() {
             Manage your borrow and lend transactions
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button asChild variant="outline">
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline" className="w-full sm:w-auto">
             <Link to="/transactions/borrow">
               <ArrowDownLeft className="mr-2 h-4 w-4" />
               Borrow
             </Link>
           </Button>
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto">
             <Link to="/transactions/lend">
               <ArrowUpRight className="mr-2 h-4 w-4" />
               Lend

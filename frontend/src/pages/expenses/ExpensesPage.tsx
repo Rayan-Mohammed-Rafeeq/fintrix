@@ -115,12 +115,14 @@ export function ExpensesPage() {
             Manage and track your expenses
           </p>
         </div>
-        <Button asChild>
-          <Link to="/expenses/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Expense
-          </Link>
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild className="w-full sm:w-auto">
+            <Link to="/expenses/new">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Expense
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -155,13 +157,11 @@ export function ExpensesPage() {
       </Card>
 
       {/* Summary */}
-      <div className="flex items-center justify-between rounded-lg border border-border bg-card p-4">
+      <div className="flex flex-col gap-2 rounded-lg border border-border bg-card p-4 sm:flex-row sm:items-center sm:justify-between">
         <span className="text-sm text-muted-foreground">
           Showing {filteredAndSortedExpenses.length} of {expenses.length} expenses
         </span>
-        <span className="font-semibold">
-          Total: {formatCurrency(totalAmount)}
-        </span>
+        <span className="font-semibold">Total: {formatCurrency(totalAmount)}</span>
       </div>
 
       {/* Table */}

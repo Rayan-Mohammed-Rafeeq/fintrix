@@ -67,7 +67,7 @@ export function AuthLayout() {
           <div className="grid w-full items-center gap-12 lg:grid-cols-2">
 
             {/* ── LEFT: Branding panel ──────────────────────────── */}
-            <div className="hidden flex-col justify-center gap-10 lg:flex">
+            <div className="flex flex-col justify-center gap-8 lg:gap-10">
 
               {/* Logo */}
               <div className="flex items-center gap-3">
@@ -79,7 +79,7 @@ export function AuthLayout() {
 
               {/* Headline */}
               <div className="space-y-3">
-                <h2 className="text-4xl font-bold leading-tight tracking-tight">
+                <h2 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
                   Your finances,{' '}
                   <span className="bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
                     finally organised

@@ -213,25 +213,29 @@ export function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="mb-2 flex items-center gap-2">
-            <Badge variant="default">Member Dashboard</Badge>
+      <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card/50 p-4 backdrop-blur-sm sm:p-6">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_55%_at_20%_0%,rgba(16,185,129,0.14),transparent_70%)]" />
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <Badge variant="default">Member Dashboard</Badge>
+              <span className="text-xs text-muted-foreground">Overview</span>
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              Welcome back, {user?.name?.split(' ')[0] || 'User'}
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground sm:text-base">
+              Here&apos;s your personal finance overview for expenses, borrowing, and lending.
+            </p>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            Welcome back, {user?.name?.split(' ')[0] || 'User'}
-          </h1>
-          <p className="text-muted-foreground">
-            Here&apos;s your personal finance overview for expenses, borrowing, and lending.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button asChild variant="outline">
-            <Link to="/expenses/new">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Expense
-            </Link>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild className="w-full sm:w-auto">
+              <Link to="/expenses/new">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Expense
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -276,16 +280,16 @@ export function DashboardPage() {
       </div>
 
       {/* Charts */}
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {/* Expenses by Category */}
-        <Card>
-          <CardHeader>
+        <Card className="border-border/60 bg-card/60 backdrop-blur-sm">
+          <CardHeader className="space-y-1">
             <CardTitle className="text-base">Expenses by Category</CardTitle>
             <CardDescription>Distribution of your spending</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             {isLoading ? (
-              <Skeleton className="h-[200px] w-full" />
+              <Skeleton className="h-50 w-full" />
             ) : stablePieData.length > 0 ? (
               <div className="chart-isolated">
                 <ResponsiveContainer width="100%" height={250}>
@@ -326,7 +330,7 @@ export function DashboardPage() {
                 </div>
               </div>
             ) : (
-              <div className="flex h-[200px] items-center justify-center text-muted-foreground">
+              <div className="flex h-50 items-center justify-center text-muted-foreground">
                 No expense data yet
               </div>
             )}
@@ -334,14 +338,14 @@ export function DashboardPage() {
         </Card>
 
         {/* Expense Trend */}
-        <Card>
-          <CardHeader>
+        <Card className="border-border/60 bg-card/60 backdrop-blur-sm">
+          <CardHeader className="space-y-1">
             <CardTitle className="text-base">Expense Trend</CardTitle>
             <CardDescription>Monthly spending pattern</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             {isLoading ? (
-              <Skeleton className="h-[200px] w-full" />
+              <Skeleton className="h-50 w-full" />
             ) : expenseTrend.length > 0 ? (
               <ResponsiveContainer width="100%" height={200}>
                 <AreaChart data={expenseTrend}>
@@ -359,7 +363,7 @@ export function DashboardPage() {
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex h-[200px] items-center justify-center text-muted-foreground">
+              <div className="flex h-50 items-center justify-center text-muted-foreground">
                 No trend data yet
               </div>
             )}
@@ -367,14 +371,14 @@ export function DashboardPage() {
         </Card>
 
         {/* Borrow vs Lend */}
-        <Card>
-          <CardHeader>
+        <Card className="border-border/60 bg-card/60 backdrop-blur-sm">
+          <CardHeader className="space-y-1">
             <CardTitle className="text-base">Borrow vs Lend</CardTitle>
             <CardDescription>Transaction comparison</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             {isLoading ? (
-              <Skeleton className="h-[200px] w-full" />
+              <Skeleton className="h-50 w-full" />
             ) : borrowVsLend.some((d) => d.amount > 0) ? (
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={borrowVsLend}>
@@ -394,7 +398,7 @@ export function DashboardPage() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex h-[200px] items-center justify-center text-muted-foreground">
+              <div className="flex h-50 items-center justify-center text-muted-foreground">
                 No transaction data yet
               </div>
             )}
@@ -405,7 +409,7 @@ export function DashboardPage() {
       {/* Recent Tables */}
       <div className="grid gap-4 lg:grid-cols-2">
         {/* Recent Expenses */}
-        <Card>
+        <Card className="border-border/60 bg-card/60 backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-base">Recent Expenses</CardTitle>
@@ -423,26 +427,55 @@ export function DashboardPage() {
                 ))}
               </div>
             ) : recentExpenses.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
+              <>
+                {/* Mobile: card list */}
+                <div className="space-y-2 md:hidden">
                   {recentExpenses.map((expense: Expense) => (
-                    <TableRow key={expense.id}>
-                      <TableCell className="font-medium">{expense.title}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{expense.category}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right">{formatCurrency(expense.amount)}</TableCell>
-                    </TableRow>
+                    <div
+                      key={expense.id}
+                      className="rounded-xl border border-border/70 bg-black/10 p-3"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium">{expense.title}</p>
+                          <div className="mt-1 flex flex-wrap items-center gap-2">
+                            <Badge variant="secondary" className="text-[11px]">
+                              {expense.category}
+                            </Badge>
+                          </div>
+                        </div>
+                        <p className="shrink-0 text-sm font-semibold">
+                          {formatCurrency(expense.amount)}
+                        </p>
+                      </div>
+                    </div>
                   ))}
-                </TableBody>
-              </Table>
+                </div>
+
+                {/* Desktop/tablet: table */}
+                <div className="hidden md:block">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {recentExpenses.map((expense: Expense) => (
+                        <TableRow key={expense.id}>
+                          <TableCell className="font-medium">{expense.title}</TableCell>
+                          <TableCell>
+                            <Badge variant="secondary">{expense.category}</Badge>
+                          </TableCell>
+                          <TableCell className="text-right">{formatCurrency(expense.amount)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             ) : (
               <div className="flex h-24 items-center justify-center text-muted-foreground">
                 No expenses yet
@@ -452,7 +485,7 @@ export function DashboardPage() {
         </Card>
 
         {/* Recent Transactions */}
-        <Card>
+        <Card className="border-border/60 bg-card/60 backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-base">Recent Transactions</CardTitle>
@@ -470,34 +503,66 @@ export function DashboardPage() {
                 ))}
               </div>
             ) : recentTransactions.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Person</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {recentTransactions.map((transaction: Transaction) => (
-                    <TableRow key={transaction.id}>
-                      <TableCell className="font-medium">{transaction.personName}</TableCell>
-                      <TableCell>
-                        <Badge variant={transaction.type === 'LEND' ? 'default' : 'secondary'}>
-                          {transaction.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={transaction.status === 'PAID' ? 'outline' : 'destructive'}>
-                          {transaction.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">{formatCurrency(transaction.amount)}</TableCell>
-                    </TableRow>
+              <>
+                {/* Mobile: card list */}
+                <div className="space-y-2 md:hidden">
+                  {recentTransactions.map((t: Transaction) => (
+                    <div
+                      key={t.id}
+                      className="rounded-xl border border-border/70 bg-black/10 p-3"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium">{t.personName}</p>
+                          <div className="mt-1 flex flex-wrap items-center gap-2">
+                            <Badge variant={t.type === 'LEND' ? 'default' : 'secondary'} className="text-[11px]">
+                              {t.type}
+                            </Badge>
+                            <Badge variant={t.status === 'PAID' ? 'outline' : 'destructive'} className="text-[11px]">
+                              {t.status}
+                            </Badge>
+                          </div>
+                        </div>
+                        <p className="shrink-0 text-sm font-semibold">
+                          {formatCurrency(t.amount)}
+                        </p>
+                      </div>
+                    </div>
                   ))}
-                </TableBody>
-              </Table>
+                </div>
+
+                {/* Desktop/tablet: table */}
+                <div className="hidden md:block">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Person</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {recentTransactions.map((transaction: Transaction) => (
+                        <TableRow key={transaction.id}>
+                          <TableCell className="font-medium">{transaction.personName}</TableCell>
+                          <TableCell>
+                            <Badge variant={transaction.type === 'LEND' ? 'default' : 'secondary'}>
+                              {transaction.type}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={transaction.status === 'PAID' ? 'outline' : 'destructive'}>
+                              {transaction.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">{formatCurrency(transaction.amount)}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             ) : (
               <div className="flex h-24 items-center justify-center text-muted-foreground">
                 No transactions yet
