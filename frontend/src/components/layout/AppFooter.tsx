@@ -72,7 +72,7 @@ export const AppFooter = ({
                 title="Home"
               >
                 <img
-                  src="/icon.png"
+                  src="/icon.svg"
                   alt={`${APP_NAME} logo`}
                   width={32}
                   height={32}

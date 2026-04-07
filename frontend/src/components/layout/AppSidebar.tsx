@@ -74,7 +74,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
         <div className="flex min-h-full flex-col">
           {/* Logo */}
           <div className="flex h-16 items-center gap-2 px-6">
-            <img src="/icon.png" alt="Fintrix" className="h-9 w-9" loading="eager" />
+            <img src="/icon.svg" alt="Fintrix" className="h-9 w-9" loading="eager" />
             <span className="text-xl font-bold tracking-tight">Fintrix</span>
           </div>
 

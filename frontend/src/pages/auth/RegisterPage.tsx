@@ -99,7 +99,7 @@ export function RegisterPage() {
       </div>
 
       <div className="space-y-3 text-center">
-        <img src="/icon.png" alt="Fintrix" className="mx-auto h-14 w-14" loading="eager" />
+        <img src="/icon.svg" alt="Fintrix" className="mx-auto h-14 w-14" loading="eager" />
         <div className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">
             {isAdmin ? 'Create your Administrator account' : 'Create your Member account'}

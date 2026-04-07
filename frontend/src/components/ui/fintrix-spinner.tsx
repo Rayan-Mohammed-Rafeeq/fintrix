@@ -25,7 +25,7 @@ export function FintrixSpinner({
 
       {/* App icon */}
       <img
-        src="/icon.png"
+        src="/icon.svg"
         alt="Fintrix"
         className="h-[70%] w-[70%] select-none rounded-[12px]"
         draggable={false}

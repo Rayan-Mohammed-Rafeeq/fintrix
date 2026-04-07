@@ -106,7 +106,7 @@ export function LoginPage() {
         <span
           className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-widest ${roleAccent.pill}`}
         >
-          <img src="/icon.png" alt="Fintrix" className="h-3 w-3" loading="eager" />
+          <img src="/icon.svg" alt="Fintrix" className="h-3 w-3" loading="eager" />
           {roleLabel} access
         </span>
 
@@ -122,7 +122,7 @@ export function LoginPage() {
       {/* ── Icon + headline ─────────────────────────────────────── */}
       <div className="mb-8 space-y-4 text-center">
         {/* Floating icon */}
-        <img src="/icon.png" alt="Fintrix" className="mx-auto h-16 w-16" loading="eager" />
+        <img src="/icon.svg" alt="Fintrix" className="mx-auto h-16 w-16" loading="eager" />
 
         <div className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight text-white">

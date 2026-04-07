@@ -71,7 +71,7 @@ export function AuthLayout() {
 
               {/* Logo */}
               <div className="flex items-center gap-3">
-                <img src="/icon.png" alt="Fintrix" className="h-11 w-11" loading="eager" />
+                <img src="/icon.svg" alt="Fintrix" className="h-11 w-11" loading="eager" />
                 <div>
                   <span className="text-2xl font-bold tracking-tight">Fintrix</span>
                 </div>
