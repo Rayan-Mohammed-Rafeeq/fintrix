@@ -10,7 +10,6 @@ import { getDefaultRouteByRole } from '@/lib/routeUtils'
 import { LoginPage } from '@/pages/auth/LoginPage'
 import { RegisterPage } from '@/pages/auth/RegisterPage'
 import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage'
-import { ResetPasswordPage } from '@/pages/auth/ResetPasswordPage'
 
 // User Pages
 import { DashboardPage } from '@/pages/dashboard/DashboardPage'
@@ -27,7 +26,7 @@ import { AdminUsersPage } from '@/pages/admin/AdminUsersPage'
 import { AdminExpensesPage } from '@/pages/admin/AdminExpensesPage'
 import { AdminTransactionsPage } from '@/pages/admin/AdminTransactionsPage'
 import { WorkspaceMembersPage } from '@/pages/workspaces/WorkspaceMembersPage'
-  import { WorkspacesPage } from '@/pages/workspaces/WorkspacesPage'
+import { WorkspacesPage } from '@/pages/workspaces/WorkspacesPage'
 
 function RoleRedirect() {
   const { isAuthenticated, isReady } = useAuth()
@@ -51,7 +50,9 @@ function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+        {/* Legacy route removed: redirect to OTP flow */}
+        <Route path="/reset-password" element={<Navigate to="/forgot-password" replace />} />
       </Route>
 
       {/* Protected User Routes */}

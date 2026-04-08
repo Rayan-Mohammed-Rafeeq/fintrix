@@ -3,8 +3,11 @@ package com.fintrix.backend.service;
 import com.fintrix.backend.dto.AuthResponse;
 import com.fintrix.backend.dto.ForgotPasswordRequest;
 import com.fintrix.backend.dto.LoginRequest;
+import com.fintrix.backend.dto.RequestPasswordResetOtpRequest;
 import com.fintrix.backend.dto.RegisterRequest;
 import com.fintrix.backend.dto.ResetPasswordRequest;
+import com.fintrix.backend.dto.ResetPasswordWithOtpRequest;
+import com.fintrix.backend.dto.VerifyPasswordResetOtpRequest;
 import com.fintrix.backend.entity.PasswordResetToken;
 import com.fintrix.backend.exception.DuplicateResourceException;
 import com.fintrix.backend.entity.User;
@@ -14,6 +17,7 @@ import com.fintrix.backend.repository.PasswordResetTokenRepository;
 import com.fintrix.backend.repository.UserRepository;
 import com.fintrix.backend.security.JwtService;
 import java.time.LocalDateTime;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,6 +44,12 @@ public class AuthService {
 
     @Value("${app.frontend.base-url:http://localhost:5173}")
     private String frontendBaseUrl;
+
+    @Value("${app.auth.otp.ttl-minutes:5}")
+    private int passwordResetOtpTtlMinutes;
+
+    @Value("${app.auth.otp.max-attempts:5}")
+    private int passwordResetOtpMaxAttempts;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -127,6 +137,91 @@ public class AuthService {
 
         prt.setUsed(true);
         passwordResetTokenRepository.save(prt);
+    }
+
+    /**
+     * OTP-based forgot password flow: send a short-lived code to email.
+     * Response should be generic (controller returns 200 always) to avoid email enumeration.
+     */
+    @Transactional
+    public void requestPasswordResetOtp(RequestPasswordResetOtpRequest request) {
+        String email = normalizeEmail(request.email());
+
+        userRepository.findByEmail(email).ifPresent(user -> {
+            // single valid OTP policy
+            passwordResetTokenRepository.markAllOtpsUsedForUser(user.getId());
+
+            String otp = generateNumericOtp6();
+            String otpHash = passwordEncoder.encode(otp);
+
+            PasswordResetToken prt = PasswordResetToken.builder()
+                    .token(otpHash)
+                    .type(PasswordResetToken.Type.OTP)
+                    .user(user)
+                    .expiresAt(LocalDateTime.now().plusMinutes(passwordResetOtpTtlMinutes))
+                    .used(false)
+                    .attempts(0)
+                    .build();
+            passwordResetTokenRepository.save(prt);
+
+            emailService.sendPasswordResetOtpEmail(email, otp, passwordResetOtpTtlMinutes);
+        });
+    }
+
+    @Transactional
+    public void verifyPasswordResetOtp(VerifyPasswordResetOtpRequest request) {
+        String email = normalizeEmail(request.email());
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadCredentialsException("Invalid or expired OTP"));
+
+        PasswordResetToken otpToken = passwordResetTokenRepository.findLatestActiveOtpForUser(user.getId())
+                .orElseThrow(() -> new BadCredentialsException("Invalid or expired OTP"));
+
+        validateOtpOrThrow(otpToken, request.otp());
+    }
+
+    @Transactional
+    public void resetPasswordWithOtp(ResetPasswordWithOtpRequest request) {
+        String email = normalizeEmail(request.email());
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadCredentialsException("Invalid or expired OTP"));
+
+        PasswordResetToken otpToken = passwordResetTokenRepository.findLatestActiveOtpForUser(user.getId())
+                .orElseThrow(() -> new BadCredentialsException("Invalid or expired OTP"));
+
+        validateOtpOrThrow(otpToken, request.otp());
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        userRepository.save(user);
+
+        otpToken.setUsed(true);
+        passwordResetTokenRepository.save(otpToken);
+    }
+
+    private void validateOtpOrThrow(PasswordResetToken otpToken, String otp) {
+        if (otpToken.isUsed()
+                || otpToken.getType() != PasswordResetToken.Type.OTP
+                || otpToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new BadCredentialsException("Invalid or expired OTP");
+        }
+
+        if (otpToken.getAttempts() >= passwordResetOtpMaxAttempts) {
+            otpToken.setUsed(true);
+            passwordResetTokenRepository.save(otpToken);
+            throw new BadCredentialsException("Invalid or expired OTP");
+        }
+
+        boolean matches = passwordEncoder.matches(otp, otpToken.getToken());
+        if (!matches) {
+            otpToken.setAttempts(otpToken.getAttempts() + 1);
+            passwordResetTokenRepository.save(otpToken);
+            throw new BadCredentialsException("Invalid or expired OTP");
+        }
+    }
+
+    private String generateNumericOtp6() {
+        int value = ThreadLocalRandom.current().nextInt(0, 1_000_000);
+        return String.format("%06d", value);
     }
 
     private AuthResponse toAuthResponse(User user) {

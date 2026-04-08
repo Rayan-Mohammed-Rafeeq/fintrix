@@ -2,9 +2,12 @@ package com.fintrix.backend.controller;
 
 import com.fintrix.backend.dto.AuthResponse;
 import com.fintrix.backend.dto.ForgotPasswordRequest;
+import com.fintrix.backend.dto.RequestPasswordResetOtpRequest;
 import com.fintrix.backend.dto.ResetPasswordRequest;
+import com.fintrix.backend.dto.ResetPasswordWithOtpRequest;
 import com.fintrix.backend.dto.LoginRequest;
 import com.fintrix.backend.dto.RegisterRequest;
+import com.fintrix.backend.dto.VerifyPasswordResetOtpRequest;
 import com.fintrix.backend.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,6 +44,27 @@ public class AuthController {
     @Operation(summary = "Generate a password reset token (demo: returns token in response)")
     public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         authService.forgotPassword(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/forgot-password/request-otp")
+    @Operation(summary = "Request a password reset OTP (code sent to email)")
+    public ResponseEntity<Void> requestPasswordResetOtp(@Valid @RequestBody RequestPasswordResetOtpRequest request) {
+        authService.requestPasswordResetOtp(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/forgot-password/verify-otp")
+    @Operation(summary = "Verify a password reset OTP")
+    public ResponseEntity<Void> verifyPasswordResetOtp(@Valid @RequestBody VerifyPasswordResetOtpRequest request) {
+        authService.verifyPasswordResetOtp(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/forgot-password/reset-password")
+    @Operation(summary = "Reset password using email + OTP")
+    public ResponseEntity<Void> resetPasswordWithOtp(@Valid @RequestBody ResetPasswordWithOtpRequest request) {
+        authService.resetPasswordWithOtp(request);
         return ResponseEntity.ok().build();
     }
 

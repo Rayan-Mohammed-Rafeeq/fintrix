@@ -11,7 +11,16 @@ public class TestEmailConfig {
     @Primary
     public EmailService emailService() {
         // No-op email sender for tests (avoids requiring SMTP config and avoids failing context).
-        return (toEmail, resetUrl) -> {
+        return new EmailService() {
+            @Override
+            public void sendPasswordResetEmail(String toEmail, String resetUrl) {
+                // no-op
+            }
+
+            @Override
+            public void sendPasswordResetOtpEmail(String toEmail, String otp, int expiresMinutes) {
+                // no-op
+            }
         };
     }
 }
