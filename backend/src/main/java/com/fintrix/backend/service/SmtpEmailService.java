@@ -43,22 +43,16 @@ public class SmtpEmailService implements EmailService {
     public void sendPasswordResetOtpEmail(String toEmail, String otp, int expiresMinutes) {
         // Use HTML email so we can show branding (logo) nicely in Gmail.
         // We reference the public logo URL rather than attaching images to keep it simple.
-        String logoUrl = (brandLogoUrl == null || brandLogoUrl.isBlank())
-                ? "https://raw.githubusercontent.com/simple-icons/simple-icons/develop/icons/letterboxd.svg"
-                : brandLogoUrl;
 
         String safeOtp = otp == null ? "" : otp;
         String html = "" +
                 "<div style=\"font-family:Arial,Helvetica,sans-serif;max-width:520px;margin:0 auto;color:#111827\">" +
-                "  <div style=\"display:flex;align-items:center;gap:12px;padding:12px 0\">" +
-                "    <img src=\"" + logoUrl + "\" alt=\"Fintrix\" width=\"32\" height=\"32\" style=\"display:block\"/>" +
-                "    <div style=\"font-size:18px;font-weight:700\">Fintrix</div>" +
-                "  </div>" +
+                headerHtml() +
                 "  <h2 style=\"margin:16px 0 8px;font-size:18px\">Your password reset code</h2>" +
                 "  <p style=\"margin:0 0 16px;color:#374151\">We received a request to reset your Fintrix password.</p>" +
                 "  <div style=\"border:1px solid #E5E7EB;border-radius:12px;padding:16px;background:#F9FAFB\">" +
                 "    <div style=\"color:#6B7280;font-size:12px;margin-bottom:6px\">One-time code (OTP)</div>" +
-                "    <div style=\"font-size:28px;letter-spacing:2px;font-weight:800\">" + safeOtp + "</div>" +
+                "    <div style=\"font-size:28px;letter-spacing:2px;font-weight:800\">" + escape(safeOtp) + "</div>" +
                 "    <div style=\"margin-top:10px;color:#6B7280;font-size:12px\">Expires in " + expiresMinutes + " minutes.</div>" +
                 "  </div>" +
                 "  <p style=\"margin:16px 0 0;color:#6B7280;font-size:12px\">If you did not request this, you can ignore this email.</p>" +
@@ -88,6 +82,30 @@ public class SmtpEmailService implements EmailService {
                     + "If you did not request this, you can ignore this email.");
             mailSender.send(message);
         }
+    }
+
+    private String headerHtml() {
+        String logo = (brandLogoUrl == null || brandLogoUrl.isBlank())
+                ? ""
+                : ("<img src=\"" + escape(brandLogoUrl) + "\" alt=\"Fintrix\" width=\"32\" height=\"32\" style=\"display:block;border:0;outline:none;text-decoration:none\"/>");
+        return ""
+                + "  <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"width:100%;border-collapse:collapse;margin:0;padding:12px 0\">"
+                + "    <tr>"
+                + "      <td style=\"width:44px;vertical-align:middle\">" + logo + "</td>"
+                + "      <td style=\"vertical-align:middle\">"
+                + "        <div style=\"font-size:18px;font-weight:700;line-height:1.2\">Fintrix</div>"
+                + "      </td>"
+                + "    </tr>"
+                + "  </table>";
+    }
+
+    private String escape(String s) {
+        if (s == null) return "";
+        return s.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;");
     }
 }
 

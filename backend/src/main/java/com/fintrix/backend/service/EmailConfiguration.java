@@ -4,9 +4,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 public class EmailConfiguration {
+
+    @Bean
+    @ConditionalOnProperty(prefix = "app.email.resend", name = "api-key")
+    public EmailService resendEmailService(@Value("${app.email.resend.api-key}") String apiKey) {
+        return new ResendEmailService(apiKey);
+    }
 
     @Bean
     @ConditionalOnProperty(prefix = "spring.mail", name = "host")
