@@ -9,6 +9,7 @@ import { ArrowLeft, Loader2, Mail, KeyRound, Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { FintrixSpinner } from '@/components/ui/fintrix-spinner'
 import {
   useRequestPasswordResetOtpMutation,
   useResetPasswordWithOtpMutation,
@@ -105,7 +106,28 @@ export function ForgotPasswordPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md space-y-8">
+    <div className="relative mx-auto w-full max-w-md space-y-8">
+      {isBusy && (
+        <div className="absolute inset-0 z-50 grid place-items-center rounded-2xl bg-black/50 p-6 backdrop-blur">
+          <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-black/70 p-6 text-center shadow-2xl ring-1 ring-white/10">
+            <FintrixSpinner
+              size={56}
+              className="mx-auto"
+              alt={step === 'request' ? 'Sending OTP' : 'Updating password'}
+            />
+            <div className="mt-4 space-y-2">
+              <p className="text-base font-semibold text-white [text-shadow:0_1px_10px_rgba(0,0,0,0.65)]">
+                {step === 'request' ? 'Sending OTP…' : 'Updating password…'}
+              </p>
+              <p className="text-sm leading-relaxed text-white/80 [text-shadow:0_1px_12px_rgba(0,0,0,0.75)]">
+                If this is your first visit, it may take a few seconds. Since the backend is hosted on
+                Render (free tier), it can sometimes take up to ~3 minutes to wake up after inactivity.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between gap-4">
         <div className="text-sm font-semibold text-white/70">Reset your password</div>
         <Link
@@ -126,6 +148,11 @@ export function ForgotPasswordPage() {
           {step === 'request'
             ? 'Enter your email and we’ll send a 6-digit OTP to reset your password.'
             : 'Enter the OTP sent to your email and choose a new password.'}
+        </p>
+
+        <p className="text-xs leading-relaxed text-white/40">
+          If this is your first visit, it may take a few seconds. Since the backend is hosted on Render
+          (free tier), it can sometimes take up to ~3 minutes to wake up after inactivity.
         </p>
       </div>
 
