@@ -7,7 +7,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fintrix.backend.entity.User;
 import com.fintrix.backend.enums.Role;
 import com.fintrix.backend.enums.UserStatus;
+import com.fintrix.backend.repository.BorrowTransactionRepository;
+import com.fintrix.backend.repository.ExpenseRepository;
+import com.fintrix.backend.repository.MembershipRepository;
 import com.fintrix.backend.repository.UserRepository;
+import com.fintrix.backend.repository.WorkspaceRepository;
 import com.fintrix.backend.security.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +32,18 @@ class AdminControllerIntegrationTest {
     private UserRepository userRepository;
 
     @Autowired
+    private BorrowTransactionRepository borrowTransactionRepository;
+
+    @Autowired
+    private ExpenseRepository expenseRepository;
+
+    @Autowired
+    private MembershipRepository membershipRepository;
+
+    @Autowired
+    private WorkspaceRepository workspaceRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -35,6 +51,12 @@ class AdminControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        // IMPORTANT: Delete in FK-safe order (children -> parents).
+        // Some tests create borrow_transactions/memberships that reference users.
+        borrowTransactionRepository.deleteAll();
+        expenseRepository.deleteAll();
+        membershipRepository.deleteAll();
+        workspaceRepository.deleteAll();
         userRepository.deleteAll();
     }
 
