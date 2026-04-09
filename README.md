@@ -13,7 +13,7 @@ Full-stack finance management platform for tracking expenses and transactions in
 
 **Backend:** Spring Boot (JWT secured REST API) · **Frontend:** React (Vite) · **DB:** PostgreSQL (Neon)
 
-**Live:** https://fintrix-web.vercel.app/ · **API:** https://fintrix-app-backend.onrender.com
+**Live:** https://fintrix.alliededge.app · **API:** https://fintrix-app-backend.onrender.com
 
 > Note: The backend is hosted on Render (free tier) and may take ~1–2 minutes to spin up on the first request. Once active, responses are fast.
 
@@ -52,7 +52,7 @@ The system is designed around a clean separation of concerns (controller → ser
 
 ## Quick Test (2 minutes)
 
-1. Open: https://fintrix-web.vercel.app/
+1. Open: https://fintrix.alliededge.app
 2. Login using demo credentials below
 3. Create or explore a workspace
 4. Add expenses / view dashboard trends
@@ -269,7 +269,7 @@ curl -X POST "https://fintrix-app-backend.onrender.com/api/v1/auth/login" \
 
 Deployed URLs:
 
-- Frontend: https://fintrix-web.vercel.app/
+- Frontend: https://fintrix.alliededge.app
 - Backend: https://fintrix-app-backend.onrender.com
 
 ### Database (Neon)
