@@ -86,4 +86,3 @@ class AdminControllerIntegrationTest {
                 .andExpect(status().isForbidden());
     }
 }
-
