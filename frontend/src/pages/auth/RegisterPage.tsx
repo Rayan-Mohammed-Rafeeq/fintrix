@@ -85,6 +85,14 @@ export function RegisterPage() {
         </div>
       )}
 
+      <Link
+        to="/"
+        className="inline-flex items-center gap-2 text-xs font-medium text-white/40 transition-colors hover:text-white/70"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Back to home
+      </Link>
+
       <div className="flex items-center justify-between gap-4">
         <Badge variant={isAdmin ? 'secondary' : 'default'} className="px-3 py-1">
           Workspace onboarding

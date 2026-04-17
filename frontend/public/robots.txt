@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://fintrix.alliededge.app/sitemap.xml
+

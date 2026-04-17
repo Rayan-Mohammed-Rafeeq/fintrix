@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { Toaster } from '@/components/ui/sonner'
 import { WorkspaceProvider } from '@/contexts/WorkspaceContext'
 import { onAuthStateChange } from '@/store/authStore'
+import { ScrollToTop } from '@/components/layout/ScrollToTop'
 import App from './App'
 import './index.css'
 
@@ -30,6 +31,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
+        <ScrollToTop />
         <WorkspaceProvider>
           <App />
         </WorkspaceProvider>

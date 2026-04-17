@@ -1,5 +1,5 @@
 export function getDefaultRouteByRole(): string {
   // All roles land on the main dashboard.
-  return '/dashboard'
+  return '/app/dashboard'
 }
 

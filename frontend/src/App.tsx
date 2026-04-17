@@ -5,6 +5,7 @@ import { AuthLayout } from '@/components/layout/AuthLayout'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { getDefaultRouteByRole } from '@/lib/routeUtils'
+import { LandingPage } from '@/pages/LandingPage'
 
 // Auth Pages
 import { LoginPage } from '@/pages/auth/LoginPage'
@@ -46,6 +47,8 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Public Routes */}
+      <Route path="/" element={<LandingPage />} />
+
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
@@ -55,50 +58,82 @@ function AppRoutes() {
         <Route path="/reset-password" element={<Navigate to="/forgot-password" replace />} />
       </Route>
 
-      {/* Protected User Routes */}
+      {/* Protected App Routes */}
       <Route
+        path="/app"
         element={
           <ProtectedRoute allowedRoles={['VIEWER', 'ANALYST', 'ADMIN']}>
             <DashboardLayout />
           </ProtectedRoute>
         }
       >
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/expenses" element={<ExpensesPage />} />
-        <Route path="/expenses/new" element={<NewExpensePage />} />
-        <Route path="/expenses/:id/edit" element={<EditExpensePage />} />
-        <Route path="/transactions" element={<TransactionsPage />} />
-        <Route path="/transactions/borrow" element={<BorrowPage />} />
-        <Route path="/transactions/lend" element={<LendPage />} />
+        {/* Default app entry */}
+        <Route index element={<Navigate to="dashboard" replace />} />
+
+        {/* User */}
+        <Route path="dashboard" element={<DashboardPage />} />
+        <Route path="expenses" element={<ExpensesPage />} />
+        <Route path="expenses/new" element={<NewExpensePage />} />
+        <Route path="expenses/:id/edit" element={<EditExpensePage />} />
+        <Route path="transactions" element={<TransactionsPage />} />
+        <Route path="transactions/borrow" element={<BorrowPage />} />
+        <Route path="transactions/lend" element={<LendPage />} />
+
+        {/* Workspaces */}
+        <Route path="workspaces" element={<WorkspacesPage />} />
+        <Route path="workspaces/members" element={<WorkspaceMembersPage />} />
+
+        {/* Admin */}
+        <Route
+          path="admin"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/users"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminUsersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/expenses"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminExpensesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/transactions"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminTransactionsPage />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
-      {/* Protected Workspace Routes (multi-tenant area) */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={['VIEWER', 'ANALYST', 'ADMIN']}>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/workspaces" element={<WorkspacesPage />} />
-        <Route path="/workspaces/members" element={<WorkspaceMembersPage />} />
-      </Route>
+      {/* Backwards-compatible redirects for old URLs */}
+      <Route path="/dashboard" element={<Navigate to="/app/dashboard" replace />} />
+      <Route path="/expenses" element={<Navigate to="/app/expenses" replace />} />
+      <Route path="/expenses/new" element={<Navigate to="/app/expenses/new" replace />} />
+      <Route path="/expenses/:id/edit" element={<Navigate to="/app/expenses/:id/edit" replace />} />
+      <Route path="/transactions" element={<Navigate to="/app/transactions" replace />} />
+      <Route path="/transactions/borrow" element={<Navigate to="/app/transactions/borrow" replace />} />
+      <Route path="/transactions/lend" element={<Navigate to="/app/transactions/lend" replace />} />
+      <Route path="/workspaces" element={<Navigate to="/app/workspaces" replace />} />
+      <Route path="/workspaces/members" element={<Navigate to="/app/workspaces/members" replace />} />
+      <Route path="/admin" element={<Navigate to="/app/admin" replace />} />
+      <Route path="/admin/users" element={<Navigate to="/app/admin/users" replace />} />
+      <Route path="/admin/expenses" element={<Navigate to="/app/admin/expenses" replace />} />
+      <Route path="/admin/transactions" element={<Navigate to="/app/admin/transactions" replace />} />
 
-      {/* Protected Admin Routes */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={['ADMIN']}>
-            <DashboardLayout />
-          </ProtectedRoute>
-        }
-      >
-        <Route path="/admin" element={<AdminDashboardPage />} />
-        <Route path="/admin/users" element={<AdminUsersPage />} />
-        <Route path="/admin/expenses" element={<AdminExpensesPage />} />
-        <Route path="/admin/transactions" element={<AdminTransactionsPage />} />
-      </Route>
-
-      <Route path="/" element={<RoleRedirect />} />
+      {/* Unknown routes: if authed, go to app; otherwise go to landing */}
       <Route path="*" element={<RoleRedirect />} />
     </Routes>
   )

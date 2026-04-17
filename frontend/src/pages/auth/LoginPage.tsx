@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -32,6 +32,7 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 export function LoginPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { login } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
 
@@ -55,7 +56,11 @@ export function LoginPage() {
       onSuccess: (authResponse) => {
         login(authResponse)
         toast.success(`Welcome back, ${getRoleLabel(authResponse.role)}!`)
-        navigate(getDefaultRouteByRole(), { replace: true })
+
+        const fromPath = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname
+        const safeReturnPath = fromPath && fromPath.startsWith('/app/') ? fromPath : null
+
+        navigate(safeReturnPath ?? getDefaultRouteByRole(), { replace: true })
       },
       onError: () => {
         toast.error('Invalid email or password')
@@ -118,6 +123,14 @@ export function LoginPage() {
           Create account
         </Link>
       </div>
+
+      <Link
+        to="/"
+        className="mb-6 inline-flex items-center gap-2 text-xs font-medium text-white/40 transition-colors hover:text-white/70"
+      >
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Back to home
+      </Link>
 
       {/* ── Icon + headline ─────────────────────────────────────── */}
       <div className="mb-8 space-y-4 text-center">

@@ -44,6 +44,7 @@ export const AppFooter = ({
   const location = useLocation()
 
   const goHomeOrTop = React.useCallback(() => {
+    // Always treat '/' as the public landing page.
     if (location.pathname === '/') {
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
@@ -67,7 +68,7 @@ export const AppFooter = ({
               <button
                 type="button"
                 onClick={goHomeOrTop}
-                className="group inline-flex items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f1c]"
+                className="group inline-flex items-center gap-3 rounded-xl border border-transparent px-2 py-1 transition-all duration-200 hover:border-[rgba(16,185,129,0.25)] hover:bg-[rgba(255,255,255,0.04)] hover:shadow-[0_0_16px_rgba(16,185,129,0.20)] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f1c]"
                 aria-label="Go to home"
                 title="Home"
               >
@@ -77,12 +78,14 @@ export const AppFooter = ({
                   width={32}
                   height={32}
                   loading="lazy"
-                  className="h-8 w-8 object-contain"
+                  className="h-8 w-8 object-contain transition-transform duration-200 group-hover:scale-[1.02]"
                 />
               </button>
 
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold tracking-tight">{APP_NAME}</p>
+                <p className="truncate text-sm font-semibold tracking-tight transition-colors duration-200 group-hover:text-emerald-300">
+                  {APP_NAME}
+                </p>
                 <p className="text-xs text-white/40">v{APP_VERSION}</p>
               </div>
             </div>
